@@ -7,6 +7,7 @@ class User_sc(BaseModel):
     email: Optional[str]
     phone_number: Optional[str]
     telegram_id: Optional[str]
+    dormitory: Optional[str]
     user_photo: Optional[str]
     password:Optional[str]
 

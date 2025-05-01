@@ -63,6 +63,7 @@ async def _update_user_by_id(user_id: UUID, body: User_sc, session) -> User_sc:
             email=body.email,
             phone_number=body.phone_number,
             telegram_id=body.telegram_id,
+            dormitory=body.dormitory,
             user_photo=body.user_photo
         )
         if not updated_user:
@@ -74,5 +75,6 @@ async def _update_user_by_id(user_id: UUID, body: User_sc, session) -> User_sc:
             password=updated_user.hashed_password,
             phone_number=updated_user.phone_number,
             telegram_id=updated_user.telegram_id,
+            dormitory=updated_user.dormitory,
             user_photo=updated_user.user_photo,
         )
