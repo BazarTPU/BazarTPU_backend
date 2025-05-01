@@ -108,3 +108,7 @@ async def get_all_dormitories(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Dormitory))
     dorms = result.scalars().all()
     return [Dormitory_sc(id=dorm.id, name=dorm.name, adress=dorm.adress) for dorm in dorms]
+
+@ads_router.get("/products", response_class=HTMLResponse)
+async def products_page(request: Request):
+    return templates.TemplateResponse("products.html", {"request": request})

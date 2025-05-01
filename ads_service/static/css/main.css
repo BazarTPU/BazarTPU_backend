@@ -18,9 +18,23 @@
 
 
 .buttonHeader {
-    border: 0;
-    background: white;
-    font-size: 19px;
+    color: white !important;
+    background: black;
+    border-radius: 20px;
+    padding: 10px 20px;
+    text-decoration: none !important;
+    display: inline-block;
+}
+.buttonHeader:visited,
+.buttonHeader:active,
+.buttonHeader:focus {
+    color: white !important;
+    text-decoration: none !important;
+}
+.buttonHeader:hover {
+    background: #222;
+    color: #fff !important;
+    text-decoration: none !important;
 }
 
 .mainName {
