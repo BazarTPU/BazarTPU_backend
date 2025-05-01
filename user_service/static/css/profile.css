@@ -1,0 +1,147 @@
+
+
+
+
+.sections {
+    padding-top: 10px;
+    background: rgb(237, 237, 237);
+    /* border-right: 2px solid black; */
+}
+
+
+
+
+.buttonSection {
+    width: 100%;
+    background: transparent;
+    border-radius: 7px;
+    height: 40px;
+    font-weight: bold;
+}
+
+.btnNoAcctive {
+    /* width: 100%;
+    background: transparent; */
+    background: rgb(210, 210, 210);
+    /* border-radius: 7px; */
+    /* height: 40px; */
+    /* font-weight: bold; */
+    border: 0px ;
+    transition: all 200ms ease;
+}
+.btnNoAcctive:hover {
+    background: rgb(40,190,70);
+    border: rgb(40,190,70);
+}
+
+.btnAcctive {
+    /* width: 100%;
+    background: transparent; */
+    background: rgb(165, 165, 165);
+    /* border-radius: 7px; */
+    /* height: 40px; */
+    /* font-weight: bold; */
+    border: 1px solid black;
+}
+
+.fotoProfile {
+    width: 150px;
+    margin-top: 5%;
+    margin-bottom: 40px;
+}
+
+.areaInfo {
+    background: transparent;
+    background: rgb(223, 223, 223);
+    border: 0;
+    height: 40px;
+    width: 100%;
+    border: 1px solid black;
+    /* border-bottom: 3px solid black; */
+    border-radius: 7px;
+    padding-left: 20px;
+    outline: none;
+    
+}
+.areaInfoChange{
+    background: white;
+}
+
+.buttonChange {
+    width: 200px;
+    background: transparent;
+    border-radius: 20px;
+    height: 40px;
+    font-weight: bold;
+    font-style: italic;
+    background: rgb(210, 210, 210);
+    border: 0px ;
+    transition: all 350ms ease;
+}
+.buttonChange:hover {
+    background: rgb(40,190,70);
+    border: rgb(40,190,70);
+}
+
+.textProduct {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.changeAndRemoveLogo {
+    /* text-align: right; */
+    margin: 0; 
+    padding: 5px; 
+    width: 55px;
+    max-width: 70px;
+    z-index: 2;
+}
+
+.changeAndRemoveDiv {
+    display: flex;
+    justify-content: right;
+    /* text-align: justify; */
+}
+
+.chatTextNameSaler {
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    font-size: 25px;
+    /* border: 2px solid red; */
+}
+.chatTextNameProduct {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    /* border: 2px solid red; */
+    
+}
+.chatTextPriсe {
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+    /* border: 2px solid red; */
+}
+
+.buttonRemoveChat {
+    max-height: 50px; 
+    z-index: 3; 
+    /* background: red; */
+    padding-bottom: 55px;
+    background: transparent;
+    border: 0;
+}
+
+.linkChat {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: 1; 
+    /* border: 2px solid red; */
+}
+/* .margin-top-0 {
+    margin-top: 0;
+} */

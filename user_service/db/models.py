@@ -15,6 +15,7 @@ class User(Base):
     email = Column(String, unique=True)
     phone_number = Column(String)
     telegram_id = Column(String)
+    dormitory = Column(String)
     user_photo = Column(String)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     time_updated = Column(DateTime(timezone=True), onupdate=func.now())
