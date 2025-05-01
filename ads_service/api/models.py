@@ -24,8 +24,11 @@ class AdUpdate_sc(BaseModel):
 
 
 class Category_sc(BaseModel):
+    id: Optional[int] = None
     name: str
 
 
 class Dormitory_sc(BaseModel):
+    id: Optional[int] = None
     name: str
+    adress: str

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Body, Request, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 from watchfiles import awatch
 from typing import List
+from sqlalchemy import select
 
 from ads_service.db.session import get_db
 from ads_service.api.models import Ads_sc, Category_sc, Dormitory_sc, AdUpdate_sc
@@ -59,6 +60,7 @@ async def create_category(body: Category_sc, db: AsyncSession = Depends(get_db))
 
 @ads_router.post("/dormitories", response_model=Dormitory_sc)
 async def create_dormitory(body: Dormitory_sc, db: AsyncSession = Depends(get_db)):
+    print("BODY TYPE:", type(body), body)
     return await _create_new_dormitory(body, db)
 
 
@@ -72,7 +74,7 @@ async def delete_category(category_id: int, db: AsyncSession = Depends(get_db)):
     return await _delete_category(category_id, db)
 
 
-@ads_router.delete("/ads/{ad_id}", status_code=204)
+@ads_router.delete("/{ad_id}", status_code=204)
 async def delete_ad(ad_id: int, db: AsyncSession = Depends(get_db)):
     return await _delete_ad(ad_id, db)
 
@@ -92,3 +94,17 @@ async def new_product(request: Request):
 @ads_router.get("/json", response_model=List[Ads_sc])
 async def get_ads_json(db: AsyncSession = Depends(get_db)):
     return await _get_all_ads(db)
+
+@ads_router.get("/categories/all", response_model=List[Category_sc])
+async def get_all_categories(db: AsyncSession = Depends(get_db)):
+    from ads_service.db.models import Categories
+    result = await db.execute(select(Categories))
+    categories = result.scalars().all()
+    return [Category_sc(id=cat.id, name=cat.name) for cat in categories]
+
+@ads_router.get("/dormitories/all", response_model=List[Dormitory_sc])
+async def get_all_dormitories(db: AsyncSession = Depends(get_db)):
+    from ads_service.db.models import Dormitory
+    result = await db.execute(select(Dormitory))
+    dorms = result.scalars().all()
+    return [Dormitory_sc(id=dorm.id, name=dorm.name, adress=dorm.adress) for dorm in dorms]

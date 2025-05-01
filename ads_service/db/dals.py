@@ -50,8 +50,8 @@ class AdDAL:
         await self.db_session.flush()
         return category
 
-    async def create_dormitory(self, name: str) -> Dormitory:
-        dorm = Dormitory(name=name)
+    async def create_dormitory(self, name: str, adress: str) -> Dormitory:
+        dorm = Dormitory(name=name, adress=adress)
         self.db_session.add(dorm)
         await self.db_session.flush()
         return dorm

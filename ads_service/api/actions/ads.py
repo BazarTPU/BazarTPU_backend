@@ -73,8 +73,8 @@ async def _create_new_dormitory(body: Dormitory_sc, session)-> Dormitory_sc:
         existing = await session.execute(select(Dormitory).where(Dormitory.name == body.name))
         if existing.scalar():
             raise HTTPException(status_code=400, detail="Общежитие уже существует")
-        dormitory = await ad_dal.create_dormitory(name=body.name)
-        return Dormitory_sc(name=dormitory.name)
+        dormitory = await ad_dal.create_dormitory(name=body.name, adress=body.adress)
+        return Dormitory_sc(name=dormitory.name, adress=dormitory.adress)
 
 async def _delete_dormitory(dormitory_id: int, session):
     async with session.begin():
