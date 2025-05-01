@@ -21,8 +21,6 @@ from jose import jwt, JWTError
 from user_service.api.actions.auth import _get_user_by_email_auth, authenticate_user
 login_router = APIRouter()
 
-
-
 async def get_user_from_token(token: str = Depends(OAuth2PasswordBearer(tokenUrl="/login/token")),
                               db: AsyncSession = Depends(get_db)):
     credentials_exception = HTTPException(
@@ -53,7 +51,6 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     access_token = create_access_token(data={"sub": user.email, "some_data": [1, 2, 3]},
                                        expires_time=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}
-
 
 @login_router.get("/test_token")
 async def test_jwt_token(current_user: User = Depends(get_user_from_token)):

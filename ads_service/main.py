@@ -16,7 +16,7 @@ Base = declarative_base()
 app = FastAPI()
 main_api_router = APIRouter()
 
-app.mount("/ads/static", StaticFiles(directory="static"), name="static")
+app.mount("/ads/static", StaticFiles(directory="ads_service/static"), name="static")
 
 main_api_router.include_router(ads_router, prefix="/ads", tags=["ads"])
 app.include_router(main_api_router)

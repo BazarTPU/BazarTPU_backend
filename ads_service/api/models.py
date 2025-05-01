@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
-
-
 class Ads_sc(BaseModel):
     id: Optional[int] = None
     user_id: UUID
