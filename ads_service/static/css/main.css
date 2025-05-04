@@ -84,6 +84,7 @@
 .productBorder{
     border: 1px solid gray;
     border-radius: 10px;
+    
 }
 
 .product {
@@ -103,15 +104,16 @@
     padding-top: 15px;
 }
 
-.spanProduct {
-    padding-bottom: 20px;
-}
+/* .spanProduct {
+    padding-bottom: 0;
+} */
 
 .buttonProduct {
     background: black;
     border-radius: 20px;
     height: 40px;
     width: 100%;
+    margin-top: 0;
 }
 .buttonProductText {
     color: white;
