@@ -28,6 +28,7 @@ class Dormitory(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
+    adress = Column(String, unique=True, nullable=True)
 
     # связь с объявлениями
     ads = relationship("Ads", back_populates="dormitory")

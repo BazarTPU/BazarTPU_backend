@@ -7,21 +7,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
     <script>
-      window.onload = () => {
-        // Весь код отсюда будет выполнен, только когда полностью завершится загрузка страницы
-        let allProduct = document.getElementById('allProduct');
-        let oneProduct = document.getElementById('oneProduct');
-        // oneProduct.removeAttribute('id');
-        for(let i = 0; i < 9; i++){
-          // allProduct.appendChild(oneProduct);
-          let clone = oneProduct.cloneNode(true);
-          // Удаляем или изменяем id, чтобы не было дублирования
-          clone.removeAttribute('id');
-          // Или, например, задать новый id:
-          // clone.id = 'oneProduct' + i;
-          allProduct.appendChild(clone);
-        }
-      };
+      // window.onload = () => {
+      //   // Весь код отсюда будет выполнен, только когда полностью завершится загрузка страницы
+      //   let allProduct = document.getElementById('allProduct');
+      //   let oneProduct = document.getElementById('oneProduct');
+      //   // oneProduct.removeAttribute('id');
+      //   for(let i = 0; i < 9; i++){
+      //     // allProduct.appendChild(oneProduct);
+      //     let clone = oneProduct.cloneNode(true);
+      //     // Удаляем или изменяем id, чтобы не было дублирования
+      //     clone.removeAttribute('id');
+      //     // Или, например, задать новый id:
+      //     // clone.id = 'oneProduct' + i;
+      //     allProduct.appendChild(clone);
+      //   }
+      // };
     </script>
 </head>
 <body>
@@ -30,7 +30,7 @@
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
             
     
-            <a href="indexB.html" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+            <a href="/ads/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
                 <img src="{{ url_for('static', path='image/tpuLogo.png') }}" alt="LOGO" width="70px">
                 <span class="mainName">Базар</span>
             </a>
@@ -42,7 +42,7 @@
             
             <!-- <img src="image/Lupa.webp" alt="" class="lupa" height="35px"> -->
             <div class="text-end ">
-              <a href="newProduct.html"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="newProduct"><button class="buttonHeader">Разместить объявление</button></a>
               <a href="profileInfo.html"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
@@ -56,230 +56,82 @@
             <div class="container px-4 py-5" id="custom-cards">
                 <h2 class="category">Категории</h2>
             
-                <div class="row row-cols-1 row-cols-lg-6 align-items-stretch g-4 py-5">
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col ">
-                    <div class=" overflow-hidden itemBorder ">
-                      <div class="d-flex flex-column h-100 ">
-                        <!-- <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">Short title, long jacket</h3> -->
-                        <img src="static/image/noLogoItem900.png" alt="" class="">
-                        <p class="itemText">Название</p>
-                      </div>
-                    </div>
-                  </div>
-                  
+                
+                <div id="qwe" class="row row-cols-2 row-cols-lg-4 align-items-stretch g-4 py-5">
+                  <!-- Динамическая подгрузка категорий через JS -->
                 </div>
+
+
+
             </div>
             <div class="container px-4 py-5" id="custom-cards">
                 <h2 class="announcementAround">Объявления рядом</h2>
             
-                <div id="allProduct" class="row row-cols-1 row-cols-lg-5 align-items-stretch g-4 py-5">
-                  <div class="col product" id="oneProduct">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="static/image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <a href="product.html"><button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button></a>
-                          </div>
-                      </div>
-                  </div>
-                  <!-- <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col product">
-                      <div class=" overflow-hidden productBorder">
-                          <div class="d-flex flex-column p-3">
-                              <img src="../image/noLogoItem900.png" alt="" class="">
-                              <span>Название</span>
-                              <p class="spanProduct">Цена</p>
-                              <button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button>
-                          </div>
-                      </div>
-                  </div> -->
-
+                <div id="allProduct" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 align-items-stretch g-4 py-5">
+                    <!-- Динамическая подгрузка объявлений через JS -->
                 </div>
                 
-                  
+                <div style="height: 100%;"></div>
+                
             </div>
         </div>
         
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', async function() {
+        const categoriesRow = document.getElementById('qwe');
+        if (!categoriesRow) return;
+        try {
+          const res = await fetch('/ads/categories/all');
+          if (res.ok) {
+            const categories = await res.json();
+            categoriesRow.innerHTML = '';
+            categories.forEach(cat => {
+                categoriesRow.innerHTML += `
+                <div class="col">
+                  <a href="newProduct"><button class="buttonHeader" style="height: 100%;width: 100%;">${cat.name}</button></a>
+                </div>
+                `;
+            });
+          }
+        } catch (e) {
+            console.error('Ошибка загрузки категорий', e);
+        }
+    }); 
+    </script>
+
+    <script>
+     
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/ads/json')
+            .then(response => response.json())
+            .then(data => {
+                const allProduct = document.getElementById('allProduct');
+                allProduct.innerHTML = '';
+                data.forEach(ad => {
+                    const col = document.createElement('div');
+                    col.className = 'col product';
+                    col.innerHTML = `
+                        <div class="overflow-hidden productBorder d-flex flex-column" style="width: 100%; height: 650px;">
+                            <div class="d-flex flex-column h-100">
+                              <div class="img-wrapper flex-grow-1 overflow-hidden">
+                                <img src="${ad.photos && ad.photos[0] ? ad.photos[0] : 'static/image/noLogoItem900.png'}" alt="" class="w-100 h-100 object-fit-cover">
+                              </div>
+                              <div class="p-3">
+                                <span>${ad.title}</span>
+                                <p>${ad.price} ₽</p>
+                                <a href="/ads/products?id=${ad.id}" ><button class="buttonProduct" ><span class="buttonProductText">Просмотр</span></button></a>
+                              </div>  
+                            </div>
+                        </div>
+                    `;
+                    allProduct.appendChild(col);
+                });
+            });
+    });
+    </script>
+    <!-- <script src="/ads/static/js/indexB.js"></script> -->
 </body>
 </html>

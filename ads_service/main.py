@@ -11,12 +11,13 @@ engine = create_async_engine(settings.REAL_DATABASE_URL, future=True, echo=True)
 
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
+
 Base = declarative_base()
 
 app = FastAPI()
 main_api_router = APIRouter()
 
-app.mount("/ads/static", StaticFiles(directory="static"), name="static")
+app.mount("/ads/static", StaticFiles(directory="ads_service/static"), name="static")
 
 main_api_router.include_router(ads_router, prefix="/ads", tags=["ads"])
 app.include_router(main_api_router)

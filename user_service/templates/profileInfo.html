@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/profile.css') }}">
+    <script>
+      function moveProfile(openDiv, buttonAcctive) {
+        let listDivId = ['divInfo', 'divMessage', 'divMyProduct'];
+
+        for(let i = 0; i < listDivId.length; i++){
+          let currentDiv = document.getElementById(listDivId[i]);
+          currentDiv.style.display = 'none';
+        }
+        let currentDiv = document.getElementById(openDiv);
+        currentDiv.style.display = 'block';
+
+        let listBtnId = ['btnInfo', 'btnMessage', 'btnMyProduct'];
+        for(let i = 0; i < listBtnId.length; i++){
+          let currentBtn = document.getElementById(listBtnId[i]);
+
+          if(currentBtn.classList.contains('btnAcctive')) {
+            currentBtn.classList.remove('btnAcctive');
+            break;
+          }
+        }
+        let currentBtn = document.getElementById(buttonAcctive);
+        currentBtn.classList.add('btnAcctive');
+      }
+
+      function openChangeDiv(divIdOpen, divIdClose) {
+        let currentElement = document.getElementById(divIdClose);
+        currentElement.style.display = 'none';
+        currentElement = document.getElementById(divIdOpen);
+        currentElement.style.display = 'block';
+      }
+
+    </script>
+</head>
+<body>
+    <header class=" text-bg-white " >
+        <div class="container headerMain " >
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
+
+
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+                <img src="{{ url_for('static', path='/image/tpuLogo.png') }}" alt="LOGO" width="70px">
+                <span class="mainName">Базар</span>
+            </a>
+
+
+            <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
+              <input type="search" class=" inputMain " placeholder="Поиск" >
+              <a href="/search" class="inputMainLupa"><img src="{{ url_for('static', path='/image/Lupa.webp') }}" alt="" style="width: 80%;"></a>
+            </form>
+
+            <div class="text-end ">
+              <a href="/new-product"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="/profile"><button class="buttonHeader">Профиль</button></a>
+            </div>
+          </div>
+        </div>
+    </header>
+    <main class=" ">
+        <div class="container main2">
+          <div class="row g-5">
+
+            <div class="col-md-4 col-lg-3 sections" >
+
+              <a href="#">
+                <button class="w-100 mb-2 buttonSection btnNoAcctive btnAcctive" id="btnInfo" type="button" onclick="moveProfile('divInfo', 'btnInfo')">
+                    Информация
+                </button>
+              </a>
+              <a href="#">
+                <button class="w-100 mb-2 buttonSection btnNoAcctive" id="btnMyProduct" type="button" onclick="moveProfile('divMyProduct', 'btnMyProduct')">
+                    Мои объявления
+                </button>
+              </a>
+              <a href="#">
+                <button class="w-100 mb-2 buttonSection btnNoAcctive" id="btnMessage" type="button" onclick="moveProfile('divMessage', 'btnMessage')">
+                  Сообщения
+                </button>
+              </a>
+            </div>
+
+            <div class="col-md-8 col-lg-9" id="divInfo">
+              <div>
+                <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" >
+              </div>
+              <div class="mb-3 row">
+                <label  class="col-sm-2 col-form-label " >Имя</label>
+                <div class="col-sm-10">
+                  <input type="input" class="areaInfo" readonly value="Иван">
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label  class="col-sm-2 col-form-label">Фамилия</label>
+                <div class="col-sm-10">
+                  <input type="input" class="areaInfo" readonly value="Иванов">
+                </div>
+              </div>
+              <div class="mb-3 row">
+                <label  class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                  <input type="input" class="areaInfo" readonly value="iiv1@tpu.ru">
+                </div>
+              </div>
+
+
+              <div id="infoStatic" style="display: block;">
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Телефон</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="78999999999">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">TG</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="@vanya">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Общежитие</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="№14, Вершинина 39А">
+                  </div>
+                </div>
+                <a href="#" >
+                  <button class=" mb-2 buttonChange" onclick="openChangeDiv('infoChange', 'infoStatic')" type="button" style="margin-top: 10px; ">
+                      Изменить
+                  </button>
+                </a>
+              </div>
+
+              <div id="infoChange" style="display: none;">
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Телефон</label>
+                  <div class="col-sm-10">
+                    <input type="input" id="phoneNumberField" class="areaInfo areaInfoChange" value="78999999999">
+                    <span id="error-message-phone-change" class="errorMessage" style="display: none; color: red;"><small>Введите корректный номер телефона. Формат 7-999-999-99-99</small></span>
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">TG</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo areaInfoChange" value="@vanya">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Общежитие</label>
+                  <div class="col-sm-10">
+                    <select class="form-select areaInfo areaInfoChange" id="state" required="">
+                      <option value="">Выберите номер общежития</option>
+                      <option>Общежитие №1</option>
+                      <option>Общежитие №2</option>
+                      <option>Общежитие №3</option>
+                      <option>Общежитие №4</option>
+                      <option>Общежитие №5</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <button class=" mb-2 buttonChange" onclick="openChangeDiv('infoStatic', 'infoChange')" type="button" style="margin-top: 10px;">
+                    Сохранить
+                  </button>
+                </div>
+              </div>
+              <p style="margin-top: 100%;"></p>
+            </div>
+
+            <div class="col-md-8 col-lg-9" id="divMessage" style="display: none;">
+              <div class="row g-4 py-3 row-cols-1 row-cols-lg-12">
+                <div class="card mb-3" style="max-width: 100%; ">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                    </div>
+                    <div class="col-md-7">
+                      <div class="card-body">
+                        <h5 class="card-title chatTextNameSaler">Имя продавца</h5>
+                        <p class="card-text chatTextNameProduct">Название</p>
+                        <p class="card-text chatTextPrice">Цена</p>
+                      </div>
+                    </div>
+                    <div class="col-md-2 changeAndRemoveDiv">
+                      <a href="" style="z-index: 2;"><button class="buttonRemoveChat" ><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></button></a>
+                      <a href="/chat" class="linkChat" ></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-3 margin-top-0" style="max-width: 100%;">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                    </div>
+                    <div class="col-md-7">
+                      <div class="card-body">
+                        <h5 class="card-title chatTextNameSaler">Имя продавца</h5>
+                        <p class="card-text chatTextNameProduct">Название</p>
+                        <p class="card-text chatTextPrice">Цена</p>
+                      </div>
+                    </div>
+                    <div class="col-md-2 changeAndRemoveDiv">
+                      <a href="" style="z-index: 2;"><button class="buttonRemoveChat" ><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></button></a>
+                      <a href="/chat" class="linkChat" ></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-3 margin-top-0" style="max-width: 100%;">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                    </div>
+                    <div class="col-md-7">
+                      <div class="card-body">
+                        <h5 class="card-title chatTextNameSaler">Имя продавца</h5>
+                        <p class="card-text chatTextNameProduct">Название</p>
+                        <p class="card-text chatTextPrice">Цена</p>
+                      </div>
+                    </div>
+                    <div class="col-md-2 changeAndRemoveDiv">
+                      <a href="" style="z-index: 2;"><button class="buttonRemoveChat" ><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></button></a>
+                      <a href="/chat" class="linkChat" ></a>
+                    </div>
+                  </div>
+                </div>
+                <p style="margin-top: 100%;"></p>
+              </div>
+            </div>
+
+            <div class="col-md-8 col-lg-9" id="divMyProduct" style="display: none;">
+
+              <div class="row g-4 py-3 row-cols-1 row-cols-lg-12">
+                <div class="card mb-3" style="max-width: 100%; ">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                    </div>
+                    <div class="col-md-7">
+                      <div class="card-body">
+                        <h5 class="card-title textProduct">Название</h5>
+                        <p class="card-text textProduct">Цена</p>
+                        <p class="card-text textProduct"><small class="text-muted">Просмотры: 2</small></p>
+                      </div>
+                    </div>
+                    <div class="col-md-2 changeAndRemoveDiv" >
+                      <a href="/new-product"><img src="{{ url_for('static', path='/image/changeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
+                      <a href="#"><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-3" style="max-width: 100%; ">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                    </div>
+                    <div class="col-md-7">
+                      <div class="card-body">
+                        <h5 class="card-title textProduct">Название</h5>
+                        <p class="card-text textProduct">Цена</p>
+                        <p class="card-text textProduct"><small class="text-muted">Просмотры: 2</small></p>
+                      </div>
+                    </div>
+                    <div class="col-md-2 changeAndRemoveDiv" >
+                      <a href="/new-product"><img src="{{ url_for('static', path='/image/changeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
+                      <a href="#"><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
+                    </div>
+                  </div>
+                </div>
+                <div class="card mb-3" style="max-width: 100%; ">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                    </div>
+                    <div class="col-md-7">
+                      <div class="card-body">
+                        <h5 class="card-title textProduct">Название</h5>
+                        <p class="card-text textProduct">Цена</p>
+                        <p class="card-text textProduct"><small class="text-muted">Просмотры: 2</small></p>
+                      </div>
+                    </div>
+                    <div class="col-md-2 changeAndRemoveDiv" >
+                      <a href="/new-product"><img src="{{ url_for('static', path='/image/changeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
+                      <a href="#"><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
+                    </div>
+                  </div>
+                </div>
+                <p style="margin-top: 100%;"></p>
+              </div>
+            </div>
+
+        </div>
+    </main>
+    <script>
+      document.getElementById("phoneNumberField").addEventListener("input", function() {
+        let phonePattern = /^7[0-9]{10}$/;
+        let phoneInput = document.getElementById("phoneNumberField");
+        let error = document.getElementById("error-message-phone-change");
+        if(phonePattern.test(phoneInput.value)) {
+          error.style.display = "none";
+        }
+        else {
+          error.style.display = "block"
+        }
+      })
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

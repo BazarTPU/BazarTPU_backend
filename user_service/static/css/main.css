@@ -18,28 +18,25 @@
 
 
 .buttonHeader {
-    color: white !important;
-    background: black;
-    border-radius: 20px;
-    padding: 10px 20px;
-    text-decoration: none !important;
-    display: inline-block;
-}
-.buttonHeader:visited,
-.buttonHeader:active,
-.buttonHeader:focus {
-    color: white !important;
-    text-decoration: none !important;
-}
-.buttonHeader:hover {
-    background: #222;
-    color: #fff !important;
-    text-decoration: none !important;
+    border: 0;
+    background: white;
+    font-size: 19px;
 }
 
 .mainName {
     font-size: 35px;
     padding-left: 13px;
+}
+
+.inputMainLupa {
+    width: 35px; 
+    background: rgb(224, 221, 221);
+    outline: none; 
+    border: 2px solid rgb(224, 221, 221);
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+    display: flex;
+    align-items: center;
 }
 
 .inputMain, .lupa {
@@ -52,7 +49,9 @@
     border: 0;
     border-bottom: 2px solid rgb(224, 221, 221);
     /* border: 2px solid black; */
-    border-radius: 7px;
+    /* border-radius: 7px; */
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
     outline: none
 }
 .inputMain:focus {
@@ -84,7 +83,6 @@
 .productBorder{
     border: 1px solid gray;
     border-radius: 10px;
-    
 }
 
 .product {
@@ -104,16 +102,15 @@
     padding-top: 15px;
 }
 
-/* .spanProduct {
-    padding-bottom: 0;
-} */
+.spanProduct {
+    padding-bottom: 20px;
+}
 
 .buttonProduct {
     background: black;
     border-radius: 20px;
     height: 40px;
     width: 100%;
-    margin-top: 0;
 }
 .buttonProductText {
     color: white;

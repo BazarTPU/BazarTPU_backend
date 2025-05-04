@@ -1,4 +1,5 @@
 from sqlalchemy import select, delete
+from sqlalchemy.orm import selectinload
 
 from ads_service.db.dals import AdDAL
 from ads_service.api.models import Ads_sc, Category_sc, Dormitory_sc, AdUpdate_sc
@@ -20,16 +21,20 @@ async def _create_new_ad(body: Ads_sc, session) -> Ads_sc:
             price=body.price,
             photos=body.photos,
         )
+        # Подгружаем объявление с фотографиями через selectinload
+        result = await session.execute(
+            select(Ads).options(selectinload(Ads.photos)).where(Ads.id == ad.id)
+        )
+        ad_with_photos = result.scalar_one()
         return Ads_sc(
-            user_id=ad.user_id,
-            category_id=ad.category_id,
-            title=ad.title,
-            description=ad.description,
-            address=ad.address,
-            dormitory_id=ad.dormitory_id,
-            price=ad.price,
-            photos=[photo.file_path for photo in ad.photos] if ad.photos else None
-
+            user_id=ad_with_photos.user_id,
+            category_id=ad_with_photos.category_id,
+            title=ad_with_photos.title,
+            description=ad_with_photos.description,
+            address=ad_with_photos.address,
+            dormitory_id=ad_with_photos.dormitory_id,
+            price=ad_with_photos.price,
+            photos=[photo.file_path for photo in ad_with_photos.photos] if ad_with_photos.photos else None
         )
 
 
@@ -68,8 +73,8 @@ async def _create_new_dormitory(body: Dormitory_sc, session)-> Dormitory_sc:
         existing = await session.execute(select(Dormitory).where(Dormitory.name == body.name))
         if existing.scalar():
             raise HTTPException(status_code=400, detail="Общежитие уже существует")
-        dormitory = await ad_dal.create_dormitory(name=body.name)
-        return Dormitory_sc(name=dormitory.name)
+        dormitory = await ad_dal.create_dormitory(name=body.name, adress=body.adress)
+        return Dormitory_sc(name=dormitory.name, adress=dormitory.adress)
 
 async def _delete_dormitory(dormitory_id: int, session):
     async with session.begin():
@@ -88,7 +93,7 @@ async def _delete_ad(ad_id: int, session):
     async with session.begin():
         # Получаем объект объявления
         result = await session.execute(select(Ads).where(Ads.id == ad_id))
-        ad = result.scalar_one_or_none()
+        ad = result.unique().scalar_one_or_none()
 
         if ad is None:
             raise HTTPException(status_code=404, detail="Объявление не найдено")
@@ -124,3 +129,22 @@ async def _update_ad(ad_id: int, session,  update: AdUpdate_sc = Body(...)):
             price=ad.price,
             photos=[photo.file_path for photo in ad.photos] if ad.photos else None,
         )
+
+async def _get_all_ads(session):
+    async with session.begin():
+        ad_dal = AdDAL(session)
+        result = await session.execute(select(Ads))
+        ads = result.unique().scalars().all()
+        return [
+            Ads_sc(
+                id=ad.id,
+                user_id=ad.user_id,
+                category_id=ad.category_id,
+                title=ad.title,
+                description=ad.description,
+                address=ad.address,
+                dormitory_id=ad.dormitory_id,
+                price=ad.price,
+                photos=[photo.file_path for photo in ad.photos] if ad.photos else None
+            ) for ad in ads
+        ]

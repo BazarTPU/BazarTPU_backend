@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from uuid import UUID
-
-
 class Ads_sc(BaseModel):
     id: Optional[int] = None
     user_id: UUID
@@ -26,8 +24,11 @@ class AdUpdate_sc(BaseModel):
 
 
 class Category_sc(BaseModel):
+    id: Optional[int] = None
     name: str
 
 
 class Dormitory_sc(BaseModel):
+    id: Optional[int] = None
     name: str
+    adress: str

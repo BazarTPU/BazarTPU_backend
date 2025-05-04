@@ -1,6 +1,3 @@
-import sys
-from pathlib import Path
-sys.path.insert(0, str(Path(__file__).absolute().parents[2]))
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -19,9 +16,9 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-from user_service.db.models import Base
+# from ads_service.main import Base
+# target_metadata = Base.metadata
+from ads_service.db.models import Base
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
