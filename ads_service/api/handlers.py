@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, Body, Request, UploadFile, File, Form
+from idlelib.query import Query
+
+from fastapi import APIRouter, Depends, Body, Request, UploadFile, File, Form, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from watchfiles import awatch
 from typing import List
@@ -7,7 +9,7 @@ from sqlalchemy import select
 from ads_service.db.session import get_db
 from ads_service.api.models import Ads_sc, Category_sc, Dormitory_sc, AdUpdate_sc
 from ads_service.api.actions.ads import _create_new_ad, _create_new_category, _create_new_dormitory, _delete_dormitory, \
-    _delete_ad, _delete_category, _update_ad, _get_all_ads
+    _delete_ad, _delete_category, _update_ad, _get_all_ads, _get_search_ads
 from fastapi.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 templates = Jinja2Templates(directory="ads_service/templates")
@@ -95,6 +97,12 @@ async def new_product(request: Request):
 async def get_ads_json(db: AsyncSession = Depends(get_db)):
     return await _get_all_ads(db)
 
+@ads_router.get("/search_json", response_model=List[Ads_sc])
+async def get_search_json(db: AsyncSession = Depends(get_db),
+                       q: str | None = Query(None, description="Search term for ads title or description")
+):
+    return await _get_search_ads(db,  search_term=q)
+
 @ads_router.get("/categories/all", response_model=List[Category_sc])
 async def get_all_categories(db: AsyncSession = Depends(get_db)):
     from ads_service.db.models import Categories
@@ -112,3 +120,7 @@ async def get_all_dormitories(db: AsyncSession = Depends(get_db)):
 @ads_router.get("/products", response_class=HTMLResponse)
 async def products_page(request: Request):
     return templates.TemplateResponse("products.html", {"request": request})
+
+@ads_router.get("/foundAds", response_class=HTMLResponse)
+async def serve_found_ads(request: Request):
+    return templates.TemplateResponse("foundAds.html", {"request": request})
