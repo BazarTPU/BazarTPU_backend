@@ -1,11 +1,9 @@
 // Динамическая подгрузка найденных объявлений на странице foundAds.html
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Читаем initial search term из URL
     const params = new URLSearchParams(window.location.search);
     let searchTerm = params.get('q') || '';
 
-    // 2. Находим элементы на странице
     const heading = document.querySelector('.announcementAround');
     const allProductContainer = document.getElementById('allProduct');
     const searchInput = document.getElementById('searchInput');
@@ -13,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let debounceTimer;
 
-    // Обновляем заголовок в зависимости от term
     function updateHeading(term) {
       if (!heading) return;
       heading.textContent = term

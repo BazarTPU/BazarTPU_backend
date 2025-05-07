@@ -184,3 +184,24 @@ async def _get_search_ads(session, search_term: str | None = None):
                 photos=[photo.file_path for photo in ad.photos] if ad.photos else None
             ) for ad in ads
         ]
+
+async def _get_ads_by_category(session, category_id: int):
+    async with session.begin():
+        stmt = select(Ads).options(selectinload(Ads.photos)).where(Ads.category_id==category_id)
+
+        stmt = stmt.order_by(Ads.id.desc())
+        result = await session.execute(stmt)
+        ads = result.unique().scalars().all()
+        return [
+            Ads_sc(
+                id=ad.id,
+                user_id=ad.user_id,
+                category_id=ad.category_id,
+                title=ad.title,
+                description=ad.description,
+                address=ad.address,
+                dormitory_id=ad.dormitory_id,
+                price=ad.price,
+                photos=[photo.file_path for photo in ad.photos] if ad.photos else None
+            ) for ad in ads
+        ]
