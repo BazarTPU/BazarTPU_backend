@@ -18,24 +18,27 @@
 
 
 .buttonHeader {
-    color: white !important;
+    /* color: white !important;
     background: black;
     border-radius: 20px;
     padding: 10px 20px;
     text-decoration: none !important;
-    display: inline-block;
+    display: inline-block; */
+    border: 0;
+    background: white;
+    font-size: 19px;
 }
-.buttonHeader:visited,
+/* .buttonHeader:visited,
 .buttonHeader:active,
 .buttonHeader:focus {
     color: white !important;
     text-decoration: none !important;
 }
 .buttonHeader:hover {
-    background: #222;
-    color: #fff !important;
+    background: rgb(40,190,70);
+    color: #ffffff !important;
     text-decoration: none !important;
-}
+} */
 
 .mainName {
     font-size: 35px;
@@ -84,6 +87,7 @@
 .productBorder{
     border: 1px solid gray;
     border-radius: 10px;
+    
 }
 
 .product {
@@ -103,8 +107,12 @@
     padding-top: 15px;
 }
 
-.spanProduct {
-    padding-bottom: 20px;
+/* .spanProduct {
+    padding-bottom: 0;
+} */
+
+.buttonCategories {
+    margin-bottom: 10px;
 }
 
 .buttonProduct {
@@ -112,11 +120,17 @@
     border-radius: 20px;
     height: 40px;
     width: 100%;
+    margin-top: 0;
+    transition: all 400ms ease;
+}
+.buttonProduct:hover {
+    background: rgb(40,190,70);
+    border: rgb(40,190,70);
 }
 .buttonProductText {
     color: white;
-    padding-top: 110px;
-    padding-bottom: 110px;
+    /* padding-top: 110px;
+    padding-bottom: 110px; */
     font-weight: bold;
 }
 

@@ -1,4 +1,6 @@
-from sqlalchemy import select, delete
+from re import search
+
+from sqlalchemy import select, delete, or_
 from sqlalchemy.orm import selectinload
 
 from ads_service.db.dals import AdDAL
@@ -130,10 +132,65 @@ async def _update_ad(ad_id: int, session,  update: AdUpdate_sc = Body(...)):
             photos=[photo.file_path for photo in ad.photos] if ad.photos else None,
         )
 
+# отдаёт все объявления
 async def _get_all_ads(session):
     async with session.begin():
         ad_dal = AdDAL(session)
         result = await session.execute(select(Ads))
+        ads = result.unique().scalars().all()
+        return [
+            Ads_sc(
+                id=ad.id,
+                user_id=ad.user_id,
+                category_id=ad.category_id,
+                title=ad.title,
+                description=ad.description,
+                address=ad.address,
+                dormitory_id=ad.dormitory_id,
+                price=ad.price,
+                photos=[photo.file_path for photo in ad.photos] if ad.photos else None
+            ) for ad in ads
+        ]
+
+# отдаёт результаты поиска
+async def _get_search_ads(session, search_term: str | None = None):
+    async with session.begin():
+        stmt = select(Ads).options(selectinload(Ads.photos))
+
+        if search_term:
+            search_pattern = f"%{search_term}%"
+
+            stmt = stmt.where(
+                or_(
+                    Ads.title.ilike(search_pattern),
+                    Ads.description.ilike(search_pattern),
+                    Ads.address.ilike(search_pattern)
+                )
+            )
+
+        stmt = stmt.order_by(Ads.id.desc())
+        result = await session.execute(stmt)
+        ads = result.unique().scalars().all()
+        return [
+            Ads_sc(
+                id=ad.id,
+                user_id=ad.user_id,
+                category_id=ad.category_id,
+                title=ad.title,
+                description=ad.description,
+                address=ad.address,
+                dormitory_id=ad.dormitory_id,
+                price=ad.price,
+                photos=[photo.file_path for photo in ad.photos] if ad.photos else None
+            ) for ad in ads
+        ]
+
+async def _get_ads_by_category(session, category_id: int):
+    async with session.begin():
+        stmt = select(Ads).options(selectinload(Ads.photos)).where(Ads.category_id==category_id)
+
+        stmt = stmt.order_by(Ads.id.desc())
+        result = await session.execute(stmt)
         ads = result.unique().scalars().all()
         return [
             Ads_sc(
