@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/loginUser.css">
+</head>
+<body>
+    <div class="modal modal-sheet locationLoginUser1">
+      <div class="modal-dialog">
+        <div class="modal-content formBgLoginUser1">
+          <div class="modal-header p-5 pb-4 border-bottom-0">
+            <img src="../image/tpuLogoLoginUser1.png" alt="logo TPU" width="100%">
+          </div>
+          <div class="modal-body p-5 pt-0">
+            <form class="">
+              <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label numberPhoneText" >Телефон</label>
+                <div class="col-sm-9">
+                  <input type="input" id="inputNumberPhone" class="inputLoginUser1 numberPhone" placeholder="79999999999">
+                  <span id="error-message-phone" class="errorMessage"><small>Введите корректный номер телефона<br>
+                    Формат 7-999-999-99-99</small></span>
+                </div>
+              </div>
+              <p class="numberPhoneText" style="font-size: 16px;">
+                Можешь выбрать номер своего общежития, это поможет нам предлагать объявления рядом
+              </p>
+              <div class="">
+                <select class=" selectLoginUser2">
+                  <option>Не из общежития</option>
+                  <option>Общежетие №1</option>
+                  <option>Общежетие №2</option>
+                  <option>Общежетие №...</option>
+                </select>
+              </div>
+              <a href="indexB.html">
+                <button class="w-100 mb-4 buttonLoginUser1 buttonLoginUser2" type="button" >
+                    Продолжить
+                </button>
+              </a>
+              <p class="textLoginUser1">
+                  Сервис объявлений для студентов ТПУ
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.getElementById("inputNumberPhone").addEventListener("input", function() {
+        let phonePattern = /^7[0-9]{10}$/;
+        let phoneInput = document.getElementById("inputNumberPhone");
+        let error = document.getElementById("error-message-phone");
+        if(phonePattern.test(phoneInput.value)) {
+          error.style.display = "none";
+        }
+        else {
+          error.style.display = "block"
+        }
+      })
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

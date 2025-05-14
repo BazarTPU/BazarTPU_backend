@@ -3,6 +3,8 @@ from typing import Optional
 import uuid
 from sqlalchemy import delete, update, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
+
 from user_service.db.models import User
 
 
@@ -36,6 +38,7 @@ class UserDAL:
             email: Optional[str] = None,
             phone_number: Optional[str] = None,
             telegram_id: Optional[str] = None,
+            dormitory_id: Optional[str] = None,
             user_photo: Optional[str] = None
     ) -> Optional[User]:
         update_data = {}
@@ -49,6 +52,8 @@ class UserDAL:
             update_data["phone_number"] = phone_number
         if telegram_id is not None:
             update_data["telegram_id"] = telegram_id
+        if dormitory_id is not None:
+            update_data["dormitory_id"] = dormitory_id
         if user_photo is not None:
             update_data["user_photo"] = user_photo
 
@@ -66,9 +71,16 @@ class UserDAL:
         return updated_user[0] if updated_user else None
 
     async def get_user_by_id(self, user_id: uuid.UUID) -> Optional[User]:
-        query = select(User).where(User.user_id == user_id)
+        query = (
+            select(User)
+            .options(
+                joinedload(User.dormitory),
+                joinedload(User.photo)
+            )
+            .where(User.user_id == user_id)
+        )
         result = await self.db_session.execute(query)
-        user = result.scalar_one_or_none()
+        user = result.unique().scalar_one_or_none()
         return user
 
 
