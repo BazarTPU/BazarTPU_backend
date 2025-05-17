@@ -49,8 +49,9 @@
     background: transparent;
     font-size: 13px;
     padding-left: 10px;
+    padding-right: 7px;
     height: 35px;
-    width: 100%;
+    width: 90%;
     background: rgb(224, 221, 221);
     border: 0;
     border-bottom: 2px solid rgb(224, 221, 221);
@@ -62,6 +63,9 @@
     /* background: white; */
     border-bottom-color: rgb(40,190,70);
 }
+
+
+
 .inputMainLocation{
     display: flex;
     justify-content: center;
