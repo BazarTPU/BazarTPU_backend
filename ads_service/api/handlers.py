@@ -10,7 +10,7 @@ from sqlalchemy import select
 from ads_service.db.session import get_db
 from ads_service.api.models import Ads_sc, Category_sc, Dormitory_sc, AdUpdate_sc
 from ads_service.api.actions.ads import _create_new_ad, _create_new_category, _create_new_dormitory, _delete_dormitory, \
-    _delete_ad, _delete_category, _update_ad, _get_all_ads, _get_search_ads, _get_ads_by_category
+    _delete_ad, _delete_category, _update_ad, _get_all_ads, _get_search_ads, _get_ads_by_category, _get_one_ad
 from fastapi.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 templates = Jinja2Templates(directory="ads_service/templates")
@@ -145,3 +145,13 @@ async def serve_this_category_ads(request: Request, category_id: int):
         "request": request,
         "category_id": category_id
     })
+
+@ads_router.get("/Product", response_class=HTMLResponse)
+async def product(request: Request):
+    # print('!!!!!!!!!!!!!!!!!!!!!!!!!')
+    # print([i for i in request])
+    return templates.TemplateResponse("products.html", {"request": request})
+
+@ads_router.get("/one_ad_json/{ad_id}", response_model=Ads_sc)
+async def get_ad_json(ad_id:int, db: AsyncSession = Depends(get_db)):
+    return await _get_one_ad(db, ad_id)
