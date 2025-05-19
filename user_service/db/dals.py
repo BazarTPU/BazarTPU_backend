@@ -38,9 +38,9 @@ class UserDAL:
             email: Optional[str] = None,
             phone_number: Optional[str] = None,
             telegram_id: Optional[str] = None,
-            dormitory_id: Optional[str] = None,
-            user_photo: Optional[str] = None
+            dormitory_id: Optional[str] = None
     ) -> Optional[User]:
+        # Убрали user_photo из параметров, так как работаем через отдельный endpoint
         update_data = {}
         if first_name is not None:
             update_data["first_name"] = first_name
@@ -54,11 +54,9 @@ class UserDAL:
             update_data["telegram_id"] = telegram_id
         if dormitory_id is not None:
             update_data["dormitory_id"] = dormitory_id
-        if user_photo is not None:
-            update_data["user_photo"] = user_photo
 
         if not update_data:
-            return None  # Нечего обновлять
+            return None
 
         query = (
             update(User)

@@ -29,14 +29,13 @@ async def login_for_access_token(
         data={"sub": user.email, "user_id": str(user.user_id)}
     )
 
-    # Set the cookie with proper parameters
     response.set_cookie(
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
         max_age=1800,
-        path="/",  # Important: available for all paths
-        secure=False,  # Set to True in production with HTTPS
+        path="/",
+        secure=False,
         samesite="lax"
     )
 
