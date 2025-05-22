@@ -8,8 +8,7 @@ from sqlalchemy.log import echo_property
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.testing import future
 from fastapi.middleware.cors import CORSMiddleware
-
-import settings
+from user_service import settings
 from user_service.api.auth_middleware import AuthMiddleware
 from user_service.api.auth_router import auth_router
 from user_service.api.user_router import user_router
@@ -29,8 +28,8 @@ app.include_router(user_router)
 app.add_middleware(AuthMiddleware)
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
+app.mount("/user/static", StaticFiles(directory="user_service/static"), name="static")
+# app.mount("/ads/static", StaticFiles(directory="ads_service/static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
