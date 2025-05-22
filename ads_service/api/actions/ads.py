@@ -1,4 +1,6 @@
-from sqlalchemy import select, delete
+from re import search
+
+from sqlalchemy import select, delete, or_
 from sqlalchemy.orm import selectinload
 
 from ads_service.db.dals import AdDAL
@@ -89,18 +91,7 @@ async def _delete_category(category_id: int, session):
             raise HTTPException(status_code=404, detail="Категория не найдена")
 
 
-async def _delete_ad(ad_id: int, session):
-    async with session.begin():
-        # Получаем объект объявления
-        result = await session.execute(select(Ads).where(Ads.id == ad_id))
-        ad = result.unique().scalar_one_or_none()
 
-        if ad is None:
-            raise HTTPException(status_code=404, detail="Объявление не найдено")
-
-        # Удаляем через ORM
-        await session.delete(ad)
-        await session.flush()
 
 async def _update_ad(ad_id: int, session,  update: AdUpdate_sc = Body(...)):
     async with session.begin():
@@ -130,6 +121,7 @@ async def _update_ad(ad_id: int, session,  update: AdUpdate_sc = Body(...)):
             photos=[photo.file_path for photo in ad.photos] if ad.photos else None,
         )
 
+# отдаёт все объявления
 async def _get_all_ads(session):
     async with session.begin():
         ad_dal = AdDAL(session)
@@ -148,3 +140,96 @@ async def _get_all_ads(session):
                 photos=[photo.file_path for photo in ad.photos] if ad.photos else None
             ) for ad in ads
         ]
+
+
+
+
+# отдаёт результаты поиска
+async def _get_search_ads(session, search_term: str | None = None):
+    async with session.begin():
+        stmt = select(Ads).options(selectinload(Ads.photos))
+
+        if search_term:
+            search_pattern = f"%{search_term}%"
+
+            stmt = stmt.where(
+                or_(
+                    Ads.title.ilike(search_pattern),
+                    Ads.description.ilike(search_pattern),
+                    Ads.address.ilike(search_pattern)
+                )
+            )
+
+        stmt = stmt.order_by(Ads.id.desc())
+        result = await session.execute(stmt)
+        ads = result.unique().scalars().all()
+        return [
+            Ads_sc(
+                id=ad.id,
+                user_id=ad.user_id,
+                category_id=ad.category_id,
+                title=ad.title,
+                description=ad.description,
+                address=ad.address,
+                dormitory_id=ad.dormitory_id,
+                price=ad.price,
+                photos=[photo.file_path for photo in ad.photos] if ad.photos else None
+            ) for ad in ads
+        ]
+
+async def _get_ads_by_category(session, category_id: int):
+    async with session.begin():
+        stmt = select(Ads).options(selectinload(Ads.photos)).where(Ads.category_id==category_id)
+
+        stmt = stmt.order_by(Ads.id.desc())
+        result = await session.execute(stmt)
+        ads = result.unique().scalars().all()
+        return [
+            Ads_sc(
+                id=ad.id,
+                user_id=ad.user_id,
+                category_id=ad.category_id,
+                title=ad.title,
+                description=ad.description,
+                address=ad.address,
+                dormitory_id=ad.dormitory_id,
+                price=ad.price,
+                photos=[photo.file_path for photo in ad.photos] if ad.photos else None
+            ) for ad in ads
+        ]
+
+async def _delete_ad(ad_id: int, session):
+    async with session.begin():
+        # Получаем объект объявления
+        result = await session.execute(select(Ads).where(Ads.id == ad_id))
+        ad = result.unique().scalar_one_or_none()
+
+        if ad is None:
+            raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+        # Удаляем через ORM
+        await session.delete(ad)
+        await session.flush()
+
+# отдаёт одно объявление
+async def _get_one_ad(session, ad_id: int):
+    async with session.begin():
+        result = await session.execute(select(Ads).where(Ads.id==ad_id))
+        ad = result.unique().scalars().first()
+
+        if ad is None:
+            raise HTTPException(status_code=404, detail="Объявление не найдено")
+
+        res =  Ads_sc(
+                id=ad.id,
+                user_id=ad.user_id,
+                category_id=ad.category_id,
+                title=ad.title,
+                description=ad.description,
+                address=ad.address,
+                dormitory_id=ad.dormitory_id,
+                price=ad.price,
+                photos=[photo.file_path for photo in ad.photos] if ad.photos else None
+            )
+
+        return res

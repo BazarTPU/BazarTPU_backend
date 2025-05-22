@@ -1,7 +1,6 @@
 // // Динамическая подгрузка найденных объявлений на главной странице по конкретной категории
-
 document.addEventListener('DOMContentLoaded', function() {
-  fetch('/ads/json')
+  fetch(`/ads/get_product_by_category?category_id=${categoryId}`)
       .then(response => response.json())
       .then(data => {
           const allProduct = document.getElementById('allProduct');
@@ -9,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
           data.forEach(ad => {
               const col = document.createElement('div');
               col.className = 'col product';
-              col.innerHTML = `
+              col.innerHTML = ` 
                   <div class="overflow-hidden productBorder d-flex flex-column" style="width: 100%; height: 650px;">
                       <div class="d-flex flex-column h-100">
                         <div class="img-wrapper flex-grow-1 overflow-hidden">

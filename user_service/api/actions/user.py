@@ -1,4 +1,3 @@
-from fastapi import APIRouter
 from uuid import UUID
 from user_service.db.hashing import Hasher
 from user_service.db.dals import UserDAL
@@ -20,9 +19,6 @@ async def _create_new_user(body: User_sc, session) -> User_sc:
             last_name=user.last_name,
             email=user.email,
             password=user.hashed_password,
-            phone_number=user.phone_number,
-            telegram_id=user.telegram_id,
-            user_photo=user.user_photo,
         )
 
 

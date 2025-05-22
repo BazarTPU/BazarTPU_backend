@@ -32,6 +32,7 @@ class Dormitory(Base):
 
     # связь с объявлениями
     ads = relationship("Ads", back_populates="dormitory")
+    users = relationship("User", back_populates="dormitory")
 
 
 class AdPhoto(Base):

@@ -7,10 +7,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!adId) return;
 
     try {
-        const res = await fetch(`/ads/json`);
+        const res = await fetch(`/ads/one_ad_json/${adId}`);
         if (res.ok) {
-            const ads = await res.json();
-            const ad = ads.find(a => a.id == adId);
+            const ad = await res.json();
+            // const ad = ads.find(a => a.id == adId);
             if (!ad) return;
             // Название
             document.querySelector('h2.mb-3').textContent = ad.title;

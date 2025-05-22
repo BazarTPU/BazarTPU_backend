@@ -1,5 +1,4 @@
 // // Динамическая подгрузка объявлений на главной странице
-
 document.addEventListener('DOMContentLoaded', function() {
   fetch('/ads/json')
       .then(response => response.json())

@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                 // Очищаем старые опции, кроме первой
                 categorySelect.innerHTML = '<option value="">Категория</option>';
                 categories.forEach((cat, idx) => {
-                    // Если есть id, используйте его, иначе индекс
                     categorySelect.innerHTML += `<option value="${cat.id || idx + 1}">${cat.name}</option>`;
                 });
             }
