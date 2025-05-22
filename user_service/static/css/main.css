@@ -18,46 +18,54 @@
 
 
 .buttonHeader {
+    /* color: white !important;
+    background: black;
+    border-radius: 20px;
+    padding: 10px 20px;
+    text-decoration: none !important;
+    display: inline-block; */
     border: 0;
     background: white;
     font-size: 19px;
 }
+/* .buttonHeader:visited,
+.buttonHeader:active,
+.buttonHeader:focus {
+    color: white !important;
+    text-decoration: none !important;
+}
+.buttonHeader:hover {
+    background: rgb(40,190,70);
+    color: #ffffff !important;
+    text-decoration: none !important;
+} */
 
 .mainName {
     font-size: 35px;
     padding-left: 13px;
 }
 
-.inputMainLupa {
-    width: 35px; 
-    background: rgb(224, 221, 221);
-    outline: none; 
-    border: 2px solid rgb(224, 221, 221);
-    border-top-right-radius: 7px;
-    border-bottom-right-radius: 7px;
-    display: flex;
-    align-items: center;
-}
-
 .inputMain, .lupa {
     background: transparent;
     font-size: 13px;
     padding-left: 10px;
+    padding-right: 7px;
     height: 35px;
-    width: 100%;
+    width: 90%;
     background: rgb(224, 221, 221);
     border: 0;
     border-bottom: 2px solid rgb(224, 221, 221);
     /* border: 2px solid black; */
-    /* border-radius: 7px; */
-    border-top-left-radius: 7px;
-    border-bottom-left-radius: 7px;
+    border-radius: 7px;
     outline: none
 }
 .inputMain:focus {
     /* background: white; */
     border-bottom-color: rgb(40,190,70);
 }
+
+
+
 .inputMainLocation{
     display: flex;
     justify-content: center;
@@ -77,12 +85,13 @@
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     border: 1px solid gray
-    
+
 }
 
 .productBorder{
     border: 1px solid gray;
     border-radius: 10px;
+
 }
 
 .product {
@@ -102,8 +111,12 @@
     padding-top: 15px;
 }
 
-.spanProduct {
-    padding-bottom: 20px;
+/* .spanProduct {
+    padding-bottom: 0;
+} */
+
+.buttonCategories {
+    margin-bottom: 10px;
 }
 
 .buttonProduct {
@@ -111,11 +124,17 @@
     border-radius: 20px;
     height: 40px;
     width: 100%;
+    margin-top: 0;
+    transition: all 400ms ease;
+}
+.buttonProduct:hover {
+    background: rgb(40,190,70);
+    border: rgb(40,190,70);
 }
 .buttonProductText {
     color: white;
-    padding-top: 110px;
-    padding-bottom: 110px;
+    /* padding-top: 110px;
+    padding-bottom: 110px; */
     font-weight: bold;
 }
 
@@ -125,4 +144,3 @@
     border-bottom-right-radius: 5px;
     border-top-right-radius: 5px;
 }
-
