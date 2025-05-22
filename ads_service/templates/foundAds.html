@@ -9,32 +9,28 @@
     <link rel="icon" href="{{ url_for('static', path='image/tpuLogo.png') }}" type="image/png">
 </head>
 <body>
-<header class=" text-bg-white ">
-    <div class="container headerMain ">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
+
+    <header class=" text-bg-white ">
+      <div class="container headerMain " >
+          <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-start ">
 
 
-            <a href="/ads/"
-               class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+            <a href="/ads/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+
                 <img src="{{ url_for('static', path='image/tpuLogo.png') }}" alt="LOGO" width="70px">
                 <span class="mainName">Базар</span>
             </a>
 
-            <form id="searchForm" class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
-                <input id="searchInput"
-                       name="q"
-                       type="search"
-                       class="inputMain"
-                       value="{{ request.query_params.get('q','') }}">
+
+            <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
+              <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px">
             </form>
+
             <!-- <img src="image/Lupa.webp" alt="" class="lupa" height="35px"> -->
-            <div class="text-end">
-                <a href="newProduct">
-                    <button class="buttonHeader">Разместить объявление</button>
-                </a>
-                <a href="profileInfo.html">
-                    <button class="buttonHeader">Профиль</button>
-                </a>
+            <div class="" style="display: flex; justify-content: space-between;">
+              <a href="newProduct"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="profileInfo.html"><button class="buttonHeader">Профиль</button></a>
+
             </div>
         </div>
     </div>
