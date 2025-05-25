@@ -41,7 +41,6 @@
     </script>
 </head>
 <body>
-
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -132,25 +131,22 @@
 </script>
     <header class=" text-bg-white " >
         <div class="container headerMain " >
-          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
+          <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-start ">
 
 
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
                 <img src="{{ url_for('static', path='/img/tpuLogo.png') }}" alt="LOGO" width="70px">
-
                 <span class="mainName">Базар</span>
             </a>
 
+
             <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
-
-              <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px">
-
+              <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px; border-radius: 7px;">
             </form>
 
-            <!-- <img src="image/Lupa.webp" alt="" class="lupa" height="35px"> -->
-            <div class="" style="display: flex; justify-content: space-between;">
-              <a href="newProduct"><button class="buttonHeader">Разместить объявление</button></a>
-              <a href="profileInfo.html"><button class="buttonHeader">Профиль</button></a>
+            <div class="text-end ">
+              <a href="/new-product"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="/profile"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
         </div>
@@ -179,7 +175,7 @@
             </div>
 
             <div class="col-md-8 col-lg-9" id="divInfo">
-              <div class="mb-3 row">
+              <!-- <div class="mb-3 row">
                 <label  class="col-sm-2 col-form-label " >Имя</label>
                 <div class="col-sm-10">
                   <input type="input" class="areaInfo" readonly value="{{ user.first_name }}">
@@ -196,13 +192,34 @@
                 <div class="col-sm-10">
                   <input type="input" class="areaInfo" readonly value="{{ user.email }}">
                 </div>
-              </div>
+              </div> -->
 
 
               <div id="infoStatic" style="display: block;">
                 <div>
                   <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" id="userAvatar">
                 </div>
+<!--  -->
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label " >Имя</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.first_name }}">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Фамилия</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.last_name }}">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Email</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.email }}">
+                  </div>
+                </div>
+
+<!--  -->
                 <div class="mb-3 row">
                   <label  class="col-sm-2 col-form-label">Телефон</label>
                   <div class="col-sm-10">
@@ -294,8 +311,8 @@
                     <div class="col-md-3">
                       <div>
                         <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
-                        <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" id="userAvatar" style="cursor: pointer;">
-                      </div> 90%; padding: 20px; padding-right: 0px;">
+                        <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" id="userAvatar" style="cursor: pointer; width: 90%; padding: 20px; padding-right: 0px;">
+                      </div>
                     </div>
                     <div class="col-md-7">
                       <div class="card-body">
