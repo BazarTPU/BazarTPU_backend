@@ -41,33 +41,63 @@
                   <form class="needs-validation" id="newProductForm" novalidate="">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <select class="form-select" id="country" name="category_id" required="">
-                                <option value="">Категория</option>
-                                <option value="1">Категория-1</option>
+                            <select class="form-select" id="country" name="category_id" required="" >
+                                <option value="">Выбрать категорию</option>
+                                <!-- <option value="1">Категория-1</option>
                                 <option value="2">Категория-2</option>
                                 <option value="3">Категория-3</option>
                                 <option value="4">Категория-4</option>
                                 <option value="5">Категория-5</option>
-                                <option value="6">Категория-6</option>
+                                <option value="6">Категория-6</option> -->
                             </select>
                         </div>
                         <div class="col-12">
                             <h5 class="mb-3" style="font-weight: bold;">Название объявления</h5>
                             <input class="form-control" maxlength="44" name="title" id="title" required>
                         </div>
+
                         <div class=" ">
-                            <h4>Фотографии</h4>
-                            <p>Не более 5</p>
-                            <input type="file" id="photos" name="photos" multiple accept="image/*" class="form-control mb-3">
+                          <h4>Фотографии</h4>
+                          <p>Не более 5</p>
+                          <input
+                            type="file"
+                            id="photos"
+                            name="photos"
+                            multiple
+                            accept="image/jpeg,image/png"
+                            class="form-control mb-3"
+                            style="display: none;"
+                          >
+                          <button type="button" id="btn-select" class="btn btn-secondary mb-3">Выбрать фото</button>
+                          <small id="error-count"  style="color: red; display: none;">Максимум 5 файлов!</small>
+                          <small id="error-format" style="color: red; display: none;">Недопустимый формат! Только JPG и PNG.</small>
+                          <small id="error-size"   style="color: red; display: none;">Слишком большой файл! Максимум 10 МБ.</small>
+
+                          <div id="preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
                         </div>
+
                         <div class="col-12">
                             <h4>Описание объявления</h4>
                             <textarea name="description" id="description" cols="100%" rows="10%" class="form-control textareaNewProduct" style="outline : none" required></textarea>
                         </div>
+
                         <div class="col-12">
-                            <h5 class="mb-3" style="font-weight: bold">Цена</h5>
-                            <input class="form-control" name="price" id="price" type="number" step="0.01" required>
+                          <h5 class="mb-3" style="font-weight: bold">Цена</h5>
+                          <input
+                            class="form-control"
+                            name="price"
+                            id="price"
+                            type="number"
+                            step="1"
+                            min="1"
+                            max="200000"
+                            required
+                            placeholder="Введите сумму"
+                            value="1"
+                          >
+                          <small id="price-error" style="color: red; display: none;">Введите число от 1 до 200 000</small>
                         </div>
+
                         <div class="col-12">
                             <h5 class="mb-3" style="font-weight: bold; ">Местоположение</h5>
                         </div>
@@ -117,5 +147,177 @@
       }
     });
     </script>
+
+<script>
+(function(){
+  const input     = document.getElementById('photos');
+  const btnSelect = document.getElementById('btn-select');
+  const preview   = document.getElementById('preview');
+  const errCount  = document.getElementById('error-count');
+  const errFormat = document.getElementById('error-format');
+  const errSize   = document.getElementById('error-size');
+
+  const MAX_FILES = 5;
+  const MAX_SIZE  = 10 * 1024 * 1024; // 10 МБ
+  const ALLOWED   = ['image/jpeg','image/png'];
+
+  // Массив всех выбранных файлов
+  let allFiles = [];
+
+  btnSelect.addEventListener('click', () => input.click());
+
+  function updateInputFiles(files) {
+    const dt = new DataTransfer();
+    files.forEach(f => dt.items.add(f));
+    input.files = dt.files;
+  }
+
+  function renderPreviews(files) {
+    preview.innerHTML = '';
+    files.forEach((file, idx) => {
+      const reader = new FileReader();
+      const box = document.createElement('div');
+      box.className = 'preview-box';
+      box.draggable = true;
+      box.dataset.index = idx;
+      Object.assign(box.style, {
+        width: '100px',
+        height: '100px',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        overflow: 'hidden',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        position: 'relative',
+        cursor: 'move'
+      });
+      
+      // Кнопка удаления
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '×';
+      Object.assign(delBtn.style, {
+        position: 'absolute',
+        top: '2px',
+        right: '2px',
+        background: 'rgba(0,0,0,0.5)',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '50%',
+        width: '20px',
+        height: '20px',
+        cursor: 'pointer',
+        padding: '0',
+        lineHeight: '20px',
+        textAlign: 'center'
+      });
+      delBtn.addEventListener('click', () => {
+        allFiles.splice(idx,1);
+        updateInputFiles(allFiles);
+        renderPreviews(allFiles);
+      });
+      box.appendChild(delBtn);
+
+      reader.onload = () => box.style.backgroundImage = `url(${reader.result})`;
+      reader.readAsDataURL(file);
+      preview.appendChild(box);
+    });
+  }
+
+  input.addEventListener('change', () => {
+    [errCount, errFormat, errSize].forEach(e=>e.style.display='none');
+    let newFiles = Array.from(input.files);
+
+    // Формат
+    const badFormat = newFiles.filter(f => !ALLOWED.includes(f.type));
+    if (badFormat.length) {
+      errFormat.style.display = 'block';
+      input.value = '';
+      return;
+    }
+    // Размер
+    const tooBig = newFiles.filter(f => f.size > MAX_SIZE);
+    if (tooBig.length) {
+      errSize.style.display = 'block';
+      input.value = '';
+      return;
+    }
+    // Дубли
+    newFiles = newFiles.filter(nf => !allFiles.some(af => af.name === nf.name && af.size === nf.size));
+
+    if (!newFiles.length) {
+      input.value = '';
+      return;
+    }
+    // Доступные слоты
+    const slots = MAX_FILES - allFiles.length;
+    if (slots <= 0) {
+      errCount.style.display = 'block';
+      input.value = '';
+      return;
+    }
+    if (newFiles.length > slots) {
+      errCount.style.display = 'block';
+      newFiles = newFiles.slice(0, slots);
+    }
+
+    allFiles = allFiles.concat(newFiles);
+    updateInputFiles(allFiles);
+    renderPreviews(allFiles);
+    input.value = '';
+  });
+
+  // Drag & Drop
+  let dragSrc = null;
+  preview.addEventListener('dragstart', e => {
+    if (e.target.classList.contains('preview-box')) {
+      dragSrc = Number(e.target.dataset.index);
+      e.dataTransfer.effectAllowed = 'move';
+    }
+  });
+  preview.addEventListener('dragover', e => e.preventDefault());
+  preview.addEventListener('drop', e => {
+    e.preventDefault();
+    const tgt = e.target.closest('.preview-box');
+    if (!tgt) return;
+    const dropIdx = Number(tgt.dataset.index);
+    const moved = allFiles.splice(dragSrc,1)[0];
+    allFiles.splice(dropIdx,0,moved);
+    updateInputFiles(allFiles);
+    renderPreviews(allFiles);
+  });
+})();
+</script>
+
+<script>
+  // ====== Цена: только цифры + диапазон ======
+  (function() {
+    const input = document.getElementById('price');
+    const error = document.getElementById('price-error');
+    const MIN   = Number(input.min);
+    const MAX   = Number(input.max);
+
+    input.addEventListener('keypress', e => {
+      if (!/[0-9]/.test(e.key)) e.preventDefault();
+    });
+    input.addEventListener('input', () => {
+      const cleaned = input.value.replace(/[^0-9]/g, '');
+      if (cleaned !== input.value) input.value = cleaned;
+    });
+    input.addEventListener('blur', () => {
+      let val = Number(input.value);
+      if (isNaN(val) || val < MIN) val = MIN;
+      else if (val > MAX)        val = MAX;
+      input.value = val;
+      error.style.display = (val < MIN || val > MAX) ? 'block' : 'none';
+    });
+    input.addEventListener('wheel', e => e.preventDefault());
+  })();
+</script>
+
+
+
+
+
+
 </body>
 </html>
