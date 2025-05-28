@@ -68,7 +68,7 @@
                             class="form-control mb-3"
                             style="display: none;"
                           >
-                          <button type="button" id="btn-select" class="btn btn-secondary mb-3">Выбрать фото</button>
+                          <button type="button" id="btn-select" class="buttonAddPhoto">Выбрать фото</button>
                           <small id="error-count"  style="color: red; display: none;">Максимум 5 файлов!</small>
                           <small id="error-format" style="color: red; display: none;">Недопустимый формат! Только JPG и PNG.</small>
                           <small id="error-size"   style="color: red; display: none;">Слишком большой файл! Максимум 10 МБ.</small>
@@ -89,13 +89,13 @@
                             id="price"
                             type="number"
                             step="1"
-                            min="1"
+                            min="0"
                             max="200000"
                             required
                             placeholder="Введите сумму"
                             value="1"
                           >
-                          <small id="price-error" style="color: red; display: none;">Введите число от 1 до 200 000</small>
+                          <small id="price-error" style="color: red; display: none;">Введите число от 0 до 200 000</small>
                         </div>
 
                         <div class="col-12">
@@ -260,10 +260,11 @@
       newFiles = newFiles.slice(0, slots);
     }
 
+    // Добавляем новые файлы
     allFiles = allFiles.concat(newFiles);
     updateInputFiles(allFiles);
     renderPreviews(allFiles);
-    input.value = '';
+    // Не очищаем input.files, чтобы поле отражало выбранные файлы
   });
 
   // Drag & Drop
