@@ -32,7 +32,7 @@ class Dormitory(Base):
 
     # связь с объявлениями
     ads = relationship("Ads", back_populates="dormitory")
-    users = relationship("User", back_populates="dormitory")
+    # users = relationship("User", back_populates="dormitory") Аня чо за нахуй, не могу проект два часа запустить, чтобы пофиксить три строчки????
 
 
 class AdPhoto(Base):
