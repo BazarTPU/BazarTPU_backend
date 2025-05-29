@@ -81,7 +81,6 @@
 }
 
 .itemBorder  {
-    /* border: 0; */
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     border: 1px solid gray
@@ -143,4 +142,8 @@
     /* border: 2px solid black; */
     border-bottom-right-radius: 5px;
     border-top-right-radius: 5px;
+    
+}
+.borderBlack{
+    border: 2px solid black;
 }
