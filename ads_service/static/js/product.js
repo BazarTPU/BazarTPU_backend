@@ -27,9 +27,24 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Основное фото
             document.getElementById('currentPhoto').src = photos[0];
             // Миниатюры
+            let blockPhotos = document.getElementById('blockPhotos');
             photos.forEach((photo, idx) => {
-                const thumb = document.getElementById('currentPhoto' + idx);
-                if (thumb) thumb.src = photo;
+                // const thumb = document.getElementById('currentPhoto' + idx);
+                // if (thumb) thumb.src = photo;
+                let button =``;
+                button = `
+                    <button class="allPhotos" onclick="clickPhoto(${idx})" type="button">
+                        <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; border-radius: 3px;">
+                    </button>
+                `;
+                if(idx == 0) {
+                    button = `
+                        <button class="allPhotos" onclick="clickPhoto(${idx})" type="button">
+                            <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; border-radius: 3px; border: 3px solid rgb(40,190,70);">
+                        </button>
+                    `;
+                }
+                blockPhotos.innerHTML += button;
             });
         }
     } catch (e) {

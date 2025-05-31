@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (res.ok) {
                 const categories = await res.json();
                 // Очищаем старые опции, кроме первой
-                categorySelect.innerHTML = '<option value="">Категория</option>';
+                
                 categories.forEach((cat, idx) => {
                     categorySelect.innerHTML += `<option value="${cat.id || idx + 1}">${cat.name}</option>`;
                 });
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             const res = await fetch('/ads/dormitories/all');
             if (res.ok) {
                 const dorms = await res.json();
-                dormSelect.innerHTML = '<option value="">Выберите номер общежития</option>';
                 dorms.forEach((dorm, idx) => {
                     dormSelect.innerHTML += `<option value="${dorm.id || idx + 1}">${dorm.name}</option>`;
                 });
