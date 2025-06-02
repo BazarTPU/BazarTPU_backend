@@ -11,23 +11,23 @@
 </head>
 <body>
     <header class=" text-bg-white ">
-        <div class="container headerMain " >
-          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
+      <div class="container headerMain " >
+          <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-start ">
 
-    
+
             <a href="/ads/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
                 <img src="{{ url_for('static', path='image/tpuLogo.png') }}" alt="LOGO" width="70px">
                 <span class="mainName">Базар</span>
             </a>
-    
+
             <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
-                <input type="search" class=" inputMain " placeholder="Поиск" >
-              </form>
+              <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px">
+            </form>
 
             <!-- <img src="image/Lupa.webp" alt="" class="lupa" height="35px"> -->
-            <div class="text-end ">
-                <a href="newProduct"><button class="buttonHeader">Разместить объявление</button></a>
-                <a href="profileInfo.html"><button class="buttonHeader">Профиль</button></a>
+            <div class="" style="display: flex; justify-content: space-between;">
+              <a href="newProduct"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="profileInfo.html"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
         </div>
@@ -41,45 +41,81 @@
                   <form class="needs-validation" id="newProductForm" novalidate="">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <select class="form-select" id="country" name="category_id" required="">
-                                <option value="">Категория</option>
-                                <option value="1">Категория-1</option>
-                                <option value="2">Категория-2</option>
-                                <option value="3">Категория-3</option>
-                                <option value="4">Категория-4</option>
-                                <option value="5">Категория-5</option>
-                                <option value="6">Категория-6</option>
+                            <select class="form-select" id="country" name="category_id" required="" >
+                                <option value="">Выбрать категорию</option>
                             </select>
+                            <div class="invalid-feedback">Пожалуйста, выберите категорию.</div>
                         </div>
                         <div class="col-12">
-                            <h5 class="mb-3" style="font-weight: bold;">Название объявления</h5>
-                            <input class="form-control" maxlength="44" name="title" id="title" required>
+                          <h5 class="mb-3" style="font-weight: bold;">Название объявления</h5>
+                          <input class="form-control" maxlength="44" name="title" id="title" required>
+                          <div class="invalid-feedback">
+                            Название должно начинаться с двух букв.
+                          </div>
                         </div>
+
                         <div class=" ">
-                            <h4>Фотографии</h4>
-                            <p>Не более 5</p>
-                            <input type="file" id="photos" name="photos" multiple accept="image/*" class="form-control mb-3">
+                          <h4>Фотографии</h4>
+                          <p>Не более 5</p>
+                          <input
+                            type="file"
+                            id="photos"
+                            name="photos"
+                            multiple
+                            accept="image/jpeg,image/png"
+                            class="form-control mb-3"
+                            style="display: none;"
+                          >
+                          <button type="button" id="btn-select" class="buttonAddPhoto">Выбрать фото</button>
+
+                          <!-- Уже были -->
+                          <small id="error-count"  style="color: red; display: none;">Максимум 5 файлов!</small>
+                          <small id="error-format" style="color: red; display: none;">Недопустимый формат! Только JPG и PNG.</small>
+                          <small id="error-size"   style="color: red; display: none;">Слишком большой файл! Максимум 10 МБ.</small>
+
+                          <!-- Новая подсказка для обязательного хотя бы одного фото -->
+                          <small id="error-photo-required" style="color: red; display: none;">
+                            Добавьте хотя бы одну фотографию.
+                          </small>
+
+                          <div id="preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
                         </div>
+
                         <div class="col-12">
                             <h4>Описание объявления</h4>
                             <textarea name="description" id="description" cols="100%" rows="10%" class="form-control textareaNewProduct" style="outline : none" required></textarea>
-                        </div>
+                            <div class="invalid-feedback">
+                              Описание должно начинаться с двух букв.
+                            </div>
+                          </div>
+
                         <div class="col-12">
-                            <h5 class="mb-3" style="font-weight: bold">Цена</h5>
-                            <input class="form-control" name="price" id="price" type="number" step="0.01" required>
+                          <h5 class="mb-3" style="font-weight: bold">Цена</h5>
+                          <input
+                            class="form-control"
+                            name="price"
+                            id="price"
+                            type="number"
+                            step="1"
+                            min="0"
+                            max="200000"
+                            required
+                            placeholder="Введите сумму"
+                            value="1"
+                          >
+                          <small id="price-error" style="color: red; display: none;">Введите число от 0 до 200 000</small>
                         </div>
+
                         <div class="col-12">
                             <h5 class="mb-3" style="font-weight: bold; ">Местоположение</h5>
                         </div>
                         <div class="col-md-5 marginOff" >
                             <select class="form-select" id="state" name="dormitory_id">
                                 <option value="">Выберите номер общежития</option>
-                                <option value="1">Общежитие №1</option>
-                                <option value="2">Общежитие №2</option>
-                                <option value="3">Общежитие №3</option>
-                                <option value="4">Общежитие №4</option>
-                                <option value="5">Общежитие №5</option>
                             </select>
+                            <div class="invalid-feedback">
+                              Пожалуйста, выберите номер общежития.
+                            </div>
                         </div>
                         <div class="col-md-2 or marginOff" style="margin: 5px 0px">
                             <span class="fontOr">или</span>
@@ -99,7 +135,10 @@
         </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/ads/static/js/newProduct.js"></script>
-    <script>
+    <script src="/ads/static/js/newProductValidation.js"></script>
+    <!--  -->
+    
+<!-- <script>
     document.getElementById('newProductForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const form = e.target;
@@ -116,6 +155,8 @@
         alert('Ошибка при добавлении объявления');
       }
     });
-    </script>
+    </script> -->
+
+
 </body>
 </html>

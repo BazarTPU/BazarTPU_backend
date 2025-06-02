@@ -9,9 +9,64 @@
     <link rel="stylesheet" href="{{ url_for('static', path='css/newProduct.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='css/product.css') }}">
     <script>
-        let images = ['../image/photoProduct1.png', '../image/photoProduct2.png', '../image/photoProduct3.png', '../image/photoProduct4.png'];
-        startId = 0;
-        function go(nextOrPrevious, variant) {
+        function countPhotos(){
+          blockPhotos = document.getElementById('blockPhotos');
+          return blockPhotos.querySelectorAll('button').length;
+        }
+
+        function clearBorder(){
+          for(let i = 0; i < countPhotos(); i++){
+            let element = document.getElementById('currentPhoto'+i);
+            element.style.border = "0";
+          }
+        }
+
+        function clickPhoto(indexNext) {
+          clearBorder();
+
+          let nextElement = document.getElementById('currentPhoto'+indexNext);
+          nextElement.style.border = "3px solid rgb(40,190,70)";
+          let mainImage = document.getElementById('currentPhoto');
+          mainImage.src = `${nextElement.src}`;
+        }
+
+        function clickNextOrBack(way) {
+
+          clearBorder();
+          
+          let mainImage = document.getElementById('currentPhoto');
+          mainImageSrc = mainImage.src;
+          for(let i = 0; i < countPhotos(); i++){
+            
+            currentElement = document.getElementById('currentPhoto'+i);
+            currentElementSrc = currentElement.src;
+            if(currentElementSrc == mainImageSrc){
+              indexNextElement = i;
+              if(way == 1){
+                // next
+                indexNextElement += 1;
+                if (indexNextElement >= countPhotos()){
+                  indexNextElement = 0;
+                }
+              }
+              else{
+                // back
+                indexNextElement -= 1;
+                if(indexNextElement <= -1){
+                  indexNextElement = countPhotos()-1;
+                }
+              }
+              let nextElement = document.getElementById('currentPhoto'+indexNextElement);
+              nextElement.style.border = "3px solid rgb(40,190,70)";
+              mainImage.src = `${nextElement.src}`;
+              break;
+            }
+          }
+        }
+
+        
+        
+        function go2(nextOrPrevious, variant) {
 
             let numberImageCurrent = 'currentPhoto'+startId;
             let undergroundCurrentImage = document.getElementById(numberImageCurrent);
@@ -61,12 +116,12 @@
     
             <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
               <input type="search" class=" inputMain " placeholder="Поиск" >
-              <a href="resultFind.html" class="inputMainLupa"><img src="../image/Lupa.webp" alt="" style="width: 80%;"></a>
+              <!-- <a href="resultFind.html" class="inputMainLupa"><img src="../image/Lupa.webp" alt="" style="width: 80%;"></a> -->
             </form>
             
             <!-- <img src="image/Lupa.webp" alt="" class="lupa" height="35px"> -->
             <div class="text-end ">
-              <a href="newProduct" class="buttonHeader" style="text-decoration: none;">Разместить объявление</a>
+              <a href="newProduct" class="buttonHeader"><button class="buttonHeader">Разместить объявление</button></a>
               <a href="profileInfo.html"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
@@ -81,16 +136,18 @@
                   <form class="needs-validation" novalidate="">
                     <div class="row g-3">
                         <div class="col-md-6" >
-                            <div style="display: flex; justify-items: center;">
-                                <button class="backOrNextPhoto" onclick="go(0, 'simple')" type="button"><img src="{{ url_for('static', path='image/backPhoto.png') }}" alt="Назад" style="width: 30px; "></button>
-                                <img src="{{ url_for('static', path='image/photoProduct1.png') }}" id="currentPhoto" alt="" style="max-width: 100%;">
-                                <button class="backOrNextPhoto" onclick="go(1, 'simple')" type="button"><img src="{{ url_for('static', path='image/nextPhoto.png') }}" alt="Вперёд" style="width: 30px;"></button>
+                            <div style="display: flex; justify-items: center; ">
+                                <button class="backOrNextPhoto" onclick="clickNextOrBack(0)" type="button"><img src="{{ url_for('static', path='image/backPhoto.png') }}" alt="Назад" style="width: 30px; "></button>
+                                <img src="{{ url_for('static', path='image/photoProduct1.png') }}" id="currentPhoto" alt="" style="width: 100%;">
+                                <button class="backOrNextPhoto" onclick="clickNextOrBack(1)" type="button"><img src="{{ url_for('static', path='image/nextPhoto.png') }}" alt="Вперёд" style="width: 30px;"></button>
                             </div>
-                            <div style="margin-top: 20px; display: flex;">
-                                <button class="allPhotos" onclick="go(0, 'other')" type="button"><img src="{{ url_for('static', path='image/photoProduct1.png') }}" id="currentPhoto0" alt="" onclick="go(0, 'simple')" style="width: 100%; border-radius: 3px; border: 3px solid rgb(40,190,70);"></button>
-                                <button class="allPhotos" onclick="go(1, 'other')" type="button"><img src="{{ url_for('static', path='image/photoProduct2.png') }}" id="currentPhoto1" alt="" onclick="go(0, 'simple')" style="width: 100%; border-radius: 3px;"></button>
-                                <button class="allPhotos" onclick="go(2, 'other')" type="button"><img src="{{ url_for('static', path='image/photoProduct3.png') }}" id="currentPhoto2" alt="" style="width: 100%; border-radius: 3px;"></button>
-                                <button class="allPhotos" onclick="go(3, 'other')" type="button"><img src="{{ url_for('static', path='image/photoProduct4.png') }}" id="currentPhoto3" alt="" style="width: 100%; border-radius: 3px;"></button>
+                            <div id="blockPhotos" style="margin-top: 20px; display: flex;">
+                                <!-- <button class="allPhotos" onclick="clickPhoto(0)" type="button">
+                                  <img src="{{ url_for('static', path='image/photoProduct1.png') }}" id="currentPhoto0" alt="" onclick="go(0, 'simple')" style="width: 100%; border-radius: 3px; border: 3px solid rgb(40,190,70);">
+                                </button>
+                                <button class="allPhotos" onclick="clickPhoto(1)" type="button"><img src="{{ url_for('static', path='image/photoProduct2.png') }}" id="currentPhoto1" alt="" onclick="go(0, 'simple')" style="width: 100%; border-radius: 3px;"></button>
+                                <button class="allPhotos" onclick="clickPhoto(2)" type="button"><img src="{{ url_for('static', path='image/photoProduct3.png') }}" id="currentPhoto2" alt="" style="width: 100%; border-radius: 3px;"></button>
+                                <button class="allPhotos" onclick="clickPhoto(3)" type="button"><img src="{{ url_for('static', path='image/photoProduct4.png') }}" id="currentPhoto3" alt="" style="width: 100%; border-radius: 3px;"></button> -->
                             </div>
                         </div>
                         <div class="col-12" >
@@ -99,7 +156,7 @@
                         </div>
                         <div class="col-12">
                             <h5 class="mb-3" style="font-weight: bold;">Цена</h5>
-                            <input class="form-control" readonly style="border: 2px solid black;">
+                            <input class="form-control" readonly style="border: 1px solid black;">
                         </div>
                         <div class="col-12">
                             <h5 class="mb-3" style="font-weight: bold;">Адрес</h5>
@@ -118,7 +175,7 @@
                                     <p class="card-text chatTextNameProduct" style="font-size: 20px;">iiv1@tpu.ru / @vanya</p>
                                     <div style="display: flex; align-items: end; justify-content: end; ">
 
-                                      <a href="chat.html"><button class=" buttonProduct" style="margin-top: 20px; width: 350px; " type="button"><span class="buttonProductText">Открыть чат с продавцом</span></button></a>
+                                      <a href="chat.html"><button class=" buttonProduct borderBlack" style="margin-top: 20px; width: 350px; " type="button"><span class="buttonProductText">Открыть чат с продавцом</span></button></a>
                                     </div>
                                 </div>
                               </div>
