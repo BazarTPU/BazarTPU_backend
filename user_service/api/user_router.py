@@ -12,9 +12,8 @@ from pathlib import Path
 from sqlmodel import select
 from starlette.responses import RedirectResponse, JSONResponse
 
-from ads_service.db.models import Dormitory
 from user_service import templates, settings
-from user_service.db.models import UserPhoto
+from user_service.db.models import UserPhoto, Dormitory
 from user_service.db.session import get_db
 from user_service.api.models import User_sc
 from user_service.api.actions.user import _get_user_by_id, _delete_user_by_id, _update_user_by_id, _create_new_user
@@ -23,8 +22,9 @@ from user_service.db.dals import UserDAL
 user_router = APIRouter()
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / "user_service/templates"))
 
-AVATAR_UPLOAD_DIR = "user_service/static/uploads/avatars"
-os.makedirs(AVATAR_UPLOAD_DIR, exist_ok=True)
+BASE_DIR = Path(__file__).parent.parent.parent  # Путь к корню проекта
+AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/static/uploads/avatars"
+os.makedirs(AVATAR_UPLOAD_DIR, exist_ok=True)  # Создаем папку, если её нет
 
 @user_router.get("/user/profile", response_class=HTMLResponse)
 async def get_profile_page(
@@ -55,6 +55,9 @@ async def get_profile_page(
         async with db.begin():
             user_dal = UserDAL(db)
             user = await user_dal.get_user_by_id(UUID(user_id))
+            dormitories_query = select(Dormitory).order_by(Dormitory.name)
+            dormitories_result = await db.execute(dormitories_query)
+            dormitories = dormitories_result.scalars().all()
 
             if not user:
                 return RedirectResponse(url="/auth/login", status_code=302)
@@ -67,6 +70,7 @@ async def get_profile_page(
                 "email": user.email or "",
                 "phone": user.phone_number or "",
                 "telegram_id": user.telegram_id or "",
+                "dormitories": [dorm.name for dorm in dormitories],
                 "dormitory_id": user.dormitory.name if user.dormitory else "",
                 "user_photo": user_photo
             }
@@ -114,6 +118,11 @@ async def update_profile(
                 dormitory = result.scalar_one_or_none()
                 if dormitory:
                     dorm_id = dormitory.id
+                else:
+                    return JSONResponse(
+                        content={"error": "Указанное общежитие не найдено"},
+                        status_code=400
+                    )
 
         async with db.begin():
             user_dal = UserDAL(db)
@@ -121,11 +130,15 @@ async def update_profile(
                 user_id=UUID(user_id),
                 phone_number=phone_number,
                 telegram_id=telegram_id,
-                #dormitory_id=dorm_id
+                dormitory_id=dorm_id
             )
 
             if not updated_user:
                 return JSONResponse(content={"error": "Failed to update user"}, status_code=400)
+
+            # Get updated user with dormitory info
+            user = await user_dal.get_user_by_id(UUID(user_id))
+            dormitory_name = user.dormitory.name if user.dormitory else ""
 
             return JSONResponse(content={
                 "success": True,
@@ -133,7 +146,7 @@ async def update_profile(
                 "user": {
                     "phone": phone_number,
                     "telegram_id": telegram_id,
-                    #"dormitory_id": dormitory_name
+                    "dormitory_id": dormitory_name
                 }
             })
     except JWTError:
@@ -156,63 +169,51 @@ async def upload_avatar(
         if token.startswith("Bearer "):
             token = token.replace("Bearer ", "")
 
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
-        )
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id = payload.get("user_id")
 
         if not user_id:
             return JSONResponse(content={"error": "Invalid token"}, status_code=401)
 
-        # Validate file type
+        # Проверяем тип файла
         allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif']
         file_ext = os.path.splitext(file.filename)[1].lower()
 
         if file_ext not in allowed_extensions:
-            return JSONResponse(content={"error": "Invalid file type. Only images allowed."}, status_code=400)
+            return JSONResponse(
+                content={"error": "Invalid file type. Only images allowed."},
+                status_code=400
+            )
 
-        # Generate unique filename
+        # Генерируем уникальное имя файла
         filename = f"{uuid4()}{file_ext}"
+        absolute_path = AVATAR_UPLOAD_DIR / filename  # Полный путь к файлу
+        relative_path = f"/static/uploads/avatars/{filename}"  # Путь для URL
 
-        # Use absolute path for file saving
-        absolute_path = os.path.join(AVATAR_UPLOAD_DIR, filename)
-
-        # Use relative path for database and URL
-        relative_path = f"/static/uploads/avatars/{filename}"
-
-        # Save the file
+        # Сохраняем файл
         contents = await file.read()
         with open(absolute_path, "wb") as f:
             f.write(contents)
 
-        # Update database
+        # Обновляем запись в БД
         async with db.begin():
-            # Get user with photos
             user_dal = UserDAL(db)
             user = await user_dal.get_user_by_id(UUID(user_id))
 
-            # Delete old photo if exists
-            if user and user.photo:
+            # Удаляем старый аватар (если есть)
+            if user.photo:
                 for old_photo in user.photo:
-                    # Get actual filesystem path
-                    old_path = old_photo.file_path
-                    if old_path.startswith('/'):
-                        old_path = old_path[1:]  # Remove leading slash
-
-                    old_absolute_path = os.path.join(os.path.dirname(AVATAR_UPLOAD_DIR), old_path)
-
-                    # Try to remove the old file if it exists
+                    old_path = BASE_DIR / old_photo.file_path.lstrip("/")
                     try:
-                        if os.path.exists(old_absolute_path):
-                            os.remove(old_absolute_path)
+                        if os.path.exists(old_path):
+                            os.remove(old_path)
                     except Exception as e:
-                        # Log error but continue
-                        print(f"Error removing old avatar: {str(e)}")
+                        print(f"Error deleting old avatar: {e}")
 
-                # Remove old records from database
+                # Удаляем записи из БД
                 await db.execute(delete(UserPhoto).where(UserPhoto.user_id == UUID(user_id)))
 
-            # Add new photo record
+            # Добавляем новую запись
             new_photo = UserPhoto(
                 user_id=UUID(user_id),
                 file_path=relative_path
@@ -228,8 +229,7 @@ async def upload_avatar(
     except JWTError:
         return JSONResponse(content={"error": "Invalid token"}, status_code=401)
     except Exception as e:
-        # More detailed error logging
-        print(f"Avatar upload error: {str(e)}")
+        print(f"Avatar upload error: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 @user_router.get("/user/profile/check")

@@ -86,52 +86,57 @@
     // Валидация номера телефона
     const phonePattern = /^7[0-9]{10}$/;
     if (!phonePattern.test(phoneNumber)) {
-      document.getElementById('error-message-phone-change').style.display = 'block';
-      return;
+        document.getElementById('error-message-phone-change').style.display = 'block';
+        return;
     } else {
-      document.getElementById('error-message-phone-change').style.display = 'none';
+        document.getElementById('error-message-phone-change').style.display = 'none';
     }
 
     try {
-      // Отправляем данные на сервер
-      const response = await fetch('/user/profile/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          phone_number: phoneNumber,
-          telegram_id: telegramId,
-          dormitory_id: dormitory
-        })
-      });
+        // Отправляем данные на сервер
+        const response = await fetch('/user/profile/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                phone_number: phoneNumber,
+                telegram_id: telegramId,
+                dormitory_id: dormitory
+            })
+        });
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if (result.success) {
-        // Обновляем значения в режиме просмотра
-        document.querySelector('#infoStatic input[value="{{ user.phone }}"]').value = phoneNumber;
-        document.querySelector('#infoStatic input[value="{{ user.telegram_id }}"]').value = telegramId;
-        document.querySelector('#infoStatic input[value="{{ user.dormitory_id }}"]').value = dormitory;
-        const avatarPreview = document.getElementById('userAvatarPreview');
-        if (avatarPreview) {
-            document.getElementById('userAvatar').src = avatarPreview.src;
+        if (result.success) {
+            // Обновляем значения в режиме просмотра
+            document.querySelector('#infoStatic input[value="{{ user.phone }}"]').value = phoneNumber;
+            document.querySelector('#infoStatic input[value="{{ user.telegram_id }}"]').value = telegramId;
+            // Update dormitory display
+            const dormitoryDisplay = document.querySelector('#infoStatic input[value="{{ user.dormitory_id }}"]');
+            if (dormitoryDisplay) {
+            dormitoryDisplay.value = result.user.dormitory_id || "";
+            }
+
+            const avatarPreview = document.getElementById('userAvatarPreview');
+            if (avatarPreview) {
+                document.getElementById('userAvatar').src = avatarPreview.src;
+            }
+
+            // Переключаем обратно в режим просмотра
+            document.getElementById('infoChange').style.display = 'none';
+            document.getElementById('infoStatic').style.display = 'block';
+        } else {
+            alert('Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'));
         }
-
-        // Переключаем обратно в режим просмотра
-        document.getElementById('infoChange').style.display = 'none';
-        document.getElementById('infoStatic').style.display = 'block';
-      } else {
-        alert('Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'));
-      }
     } catch (error) {
-      console.error('Ошибка:', error);
-      alert('Не удалось сохранить изменения');
+        console.error('Ошибка:', error);
+        alert('Не удалось сохранить изменения');
     }
-  }
+}
 </script>
     <header class=" text-bg-white " >
         <div class="container headerMain " >
-          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
+          <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-start ">
 
 
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
@@ -141,8 +146,7 @@
 
 
             <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
-              <input type="search" class=" inputMain " placeholder="Поиск" >
-              <a href="/search" class="inputMainLupa"><img src="{{ url_for('static', path='/img/Lupa.webp') }}" alt="" style="width: 80%;"></a>
+              <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px; border-radius: 7px;">
             </form>
 
             <div class="text-end ">
@@ -176,7 +180,7 @@
             </div>
 
             <div class="col-md-8 col-lg-9" id="divInfo">
-              <div class="mb-3 row">
+              <!-- <div class="mb-3 row">
                 <label  class="col-sm-2 col-form-label " >Имя</label>
                 <div class="col-sm-10">
                   <input type="input" class="areaInfo" readonly value="{{ user.first_name }}">
@@ -193,13 +197,34 @@
                 <div class="col-sm-10">
                   <input type="input" class="areaInfo" readonly value="{{ user.email }}">
                 </div>
-              </div>
+              </div> -->
 
 
               <div id="infoStatic" style="display: block;">
                 <div>
                   <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" id="userAvatar">
                 </div>
+<!--  -->
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label " >Имя</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.first_name }}">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Фамилия</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.last_name }}">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Email</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.email }}">
+                  </div>
+                </div>
+
+<!--  -->
                 <div class="mb-3 row">
                   <label  class="col-sm-2 col-form-label">Телефон</label>
                   <div class="col-sm-10">
@@ -249,11 +274,11 @@
                   <div class="col-sm-10">
                     <select class="form-select areaInfo areaInfoChange" id="state" required="">
                       <option value="">Выберите номер общежития</option>
-                      <option>Общежитие №1</option>
-                      <option>Общежитие №2</option>
-                      <option>Общежитие №3</option>
-                      <option>Общежитие №4</option>
-                      <option>Общежитие №5</option>
+                      {% for dormitory in user.dormitories %}
+                      <option value="{{ dormitory }}" {% if dormitory == user.dormitory_id %}selected{% endif %}>
+                        {{ dormitory }}
+                      </option>
+                      {% endfor %}
                     </select>
                   </div>
                 </div>
@@ -291,8 +316,8 @@
                     <div class="col-md-3">
                       <div>
                         <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
-                        <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" id="userAvatar" style="cursor: pointer;">
-                      </div> 90%; padding: 20px; padding-right: 0px;">
+                        <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" id="userAvatar" style="cursor: pointer; width: 90%; padding: 20px; padding-right: 0px;">
+                      </div>
                     </div>
                     <div class="col-md-7">
                       <div class="card-body">
@@ -408,11 +433,11 @@
 <script>
   // Обработчик клика по аватару в режиме редактирования
   document.getElementById('userAvatarPreview').addEventListener('click', function() {
-    document.getElementById('avatarUpload').click();
+    document.getElementById('avatarUploadInput').click();
   });
 
   // Обработчик выбора файла
-  document.getElementById('avatarUpload').addEventListener('change', async function(e) {
+  document.getElementById('avatarUploadInput').addEventListener('change', async function(e) {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
 
