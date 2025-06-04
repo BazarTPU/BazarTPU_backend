@@ -257,3 +257,57 @@ async def get_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
 @user_router.put("/{user_id}", response_model=User_sc)
 async def update_user(user_id: UUID, body: User_sc, db: AsyncSession = Depends(get_db)):
     return await _update_user_by_id(user_id, body, db)
+
+@user_router.post("/user/profile/update-additional-info", response_class=JSONResponse)
+async def update_additional_info(
+        request: Request,
+        db: AsyncSession = Depends(get_db)
+):
+    token = request.cookies.get("access_token")
+    if not token:
+        return JSONResponse(content={"error": "Not authenticated"}, status_code=401)
+
+    try:
+        if token.startswith("Bearer "):
+            token = token.replace("Bearer ", "")
+
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        user_id = payload.get("user_id")
+
+        if not user_id:
+            return JSONResponse(content={"error": "Invalid token"}, status_code=401)
+
+        form_data = await request.json()
+        phone_number = form_data.get("phone_number")
+        dormitory_name = form_data.get("dormitory_id")
+
+        dorm_id = None
+        if dormitory_name:
+            async with db.begin():
+                query = select(Dormitory).where(Dormitory.name == dormitory_name)
+                result = await db.execute(query)
+                dormitory = result.scalar_one_or_none()
+                if dormitory:
+                    dorm_id = dormitory.id
+
+        async with db.begin():
+            user_dal = UserDAL(db)
+            updated_user = await user_dal.update_user_by_id(
+                user_id=UUID(user_id),
+                phone_number=phone_number,
+                dormitory_id=dorm_id
+            )
+
+            if not updated_user:
+                return JSONResponse(content={"error": "Failed to update user"}, status_code=400)
+
+            return JSONResponse(content={
+                "success": True,
+                "message": "Данные успешно сохранены"
+            })
+    except JWTError:
+        return JSONResponse(content={"error": "Invalid token"}, status_code=401)
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
