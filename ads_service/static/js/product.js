@@ -33,14 +33,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                 // if (thumb) thumb.src = photo;
                 let button =``;
                 button = `
-                    <button class="allPhotos" onclick="clickPhoto(${idx})" type="button">
-                        <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; border-radius: 3px;">
+                    <button class="allPhotos" onclick="clickPhoto(${idx})" type="button" style="display: inline-block; width: 100px; height: 100px;">
+                        <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 3px;">
                     </button>
                 `;
                 if(idx == 0) {
                     button = `
-                        <button class="allPhotos" onclick="clickPhoto(${idx})" type="button">
-                            <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; border-radius: 3px; border: 3px solid rgb(40,190,70);">
+                        <button class="allPhotos" onclick="clickPhoto(${idx})" type="button" style="display: inline-block; width: 100px; height: 100px;">
+                            <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 3px; border: 3px solid rgb(40,190,70);">
                         </button>
                     `;
                 }
