@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         const res = await fetch(`/ads/one_ad_json/${adId}`);
         if (res.ok) {
             const ad = await res.json();
+            // const ad = ads.find(a => a.id == adId);
             if (!ad) return;
-
             // Название
             document.querySelector('h2.mb-3').textContent = ad.title;
             // Описание
@@ -22,34 +22,30 @@ document.addEventListener('DOMContentLoaded', async function() {
             const addressDivs = document.querySelectorAll('.col-12 > div > span');
             if (addressDivs.length > 0) addressDivs[0].textContent = ad.address || '';
             if (addressDivs.length > 1) addressDivs[1].textContent = ad.dormitory_id ? `Общежитие №${ad.dormitory_id}` : '';
-
             // Фото
             const photos = ad.photos && ad.photos.length ? ad.photos : ["/ads/static/image/noLogoItem900.png"];
             // Основное фото
             document.getElementById('currentPhoto').src = photos[0];
             // Миниатюры
             let blockPhotos = document.getElementById('blockPhotos');
-            blockPhotos.innerHTML = ''; // Очищаем перед добавлением
             photos.forEach((photo, idx) => {
-                let button = ``;
+                // const thumb = document.getElementById('currentPhoto' + idx);
+                // if (thumb) thumb.src = photo;
+                let button =``;
+                button = `
+                    <button class="allPhotos" onclick="clickPhoto(${idx})" type="button" style="display: inline-block; width: 100px; height: 100px;">
+                        <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 3px;">
+                    </button>
+                `;
                 if(idx == 0) {
                     button = `
-                        <button class="allPhotos" onclick="clickPhoto(${idx})" type="button">
-                            <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; border-radius: 3px; border: 3px solid rgb(40,190,70);">
-                        </button>
-                    `;
-                } else {
-                    button = `
-                        <button class="allPhotos" onclick="clickPhoto(${idx})" type="button">
-                            <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; border-radius: 3px;">
+                        <button class="allPhotos" onclick="clickPhoto(${idx})" type="button" style="display: inline-block; width: 100px; height: 100px;">
+                            <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 3px; border: 3px solid rgb(40,190,70);">
                         </button>
                     `;
                 }
                 blockPhotos.innerHTML += button;
             });
-
-            // Загружаем данные пользователя
-            await loadUserData(ad.user_id);
         }
     } catch (e) {
         console.error('Ошибка загрузки объявления', e);
