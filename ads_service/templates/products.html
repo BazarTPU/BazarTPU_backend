@@ -109,7 +109,7 @@
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
             
     
-            <a href="/ads/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+            <a href="http://localhost:8081/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
                 <img src="{{ url_for('static', path='image/tpuLogo.png') }}" alt="LOGO" width="70px">
                 <span class="mainName">Базар</span>
             </a>
@@ -121,8 +121,8 @@
             
             <!-- <img src="image/Lupa.webp" alt="" class="lupa" height="35px"> -->
             <div class="text-end ">
-              <a href="newProduct" class="buttonHeader"><button class="buttonHeader">Разместить объявление</button></a>
-              <a href="http://127.0.0.1:8002/user/profile"><button class="buttonHeader">Профиль</button></a>
+              <a href="http://localhost:8081/ads/newProduct"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="http://localhost:8080/user/profile"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
         </div>
@@ -132,49 +132,43 @@
             <main>
               <div class="row g-5">
                 <div class="col-md-12 col-lg-10">
-                  <h2 class="mb-3">Название объявление</h2>
+                  <h2 class="mb-3">Загрузка...</h2>
                   <form class="needs-validation" novalidate="">
                     <div class="row g-3">
                         <div class="col-md-6" >
                             <div style="display: flex; justify-items: center; ">
                                 <button class="backOrNextPhoto" onclick="clickNextOrBack(0)" type="button"><img src="{{ url_for('static', path='image/backPhoto.png') }}" alt="Назад" style="width: 30px; "></button>
-                                <img src="{{ url_for('static', path='image/photoProduct1.png') }}" id="currentPhoto" alt="" style="width: 100%;">
+                                <img src="{{ url_for('static', path='image/noLogoItem900.png') }}" id="currentPhoto" alt="" style="width: 100%;">
                                 <button class="backOrNextPhoto" onclick="clickNextOrBack(1)" type="button"><img src="{{ url_for('static', path='image/nextPhoto.png') }}" alt="Вперёд" style="width: 30px;"></button>
                             </div>
                             <div id="blockPhotos" style="margin-top: 20px; display: flex;">
-                                <!-- <button class="allPhotos" onclick="clickPhoto(0)" type="button">
-                                  <img src="{{ url_for('static', path='image/photoProduct1.png') }}" id="currentPhoto0" alt="" onclick="go(0, 'simple')" style="width: 100%; border-radius: 3px; border: 3px solid rgb(40,190,70);">
-                                </button>
-                                <button class="allPhotos" onclick="clickPhoto(1)" type="button"><img src="{{ url_for('static', path='image/photoProduct2.png') }}" id="currentPhoto1" alt="" onclick="go(0, 'simple')" style="width: 100%; border-radius: 3px;"></button>
-                                <button class="allPhotos" onclick="clickPhoto(2)" type="button"><img src="{{ url_for('static', path='image/photoProduct3.png') }}" id="currentPhoto2" alt="" style="width: 100%; border-radius: 3px;"></button>
-                                <button class="allPhotos" onclick="clickPhoto(3)" type="button"><img src="{{ url_for('static', path='image/photoProduct4.png') }}" id="currentPhoto3" alt="" style="width: 100%; border-radius: 3px;"></button> -->
+                                <!-- Миниатюры будут загружены динамически -->
                             </div>
                         </div>
                         <div class="col-12" >
                             <h4>Описание объявления</h4>
-                            <textarea name="" id="" cols="100%" rows="10%" class="form-control textareaNewProduct" style="outline : none" readonly>Здесь будет описание объявление.</textarea>
+                            <textarea name="" id="" cols="100%" rows="10%" class="form-control textareaNewProduct" style="outline : none" readonly>Загрузка описания...</textarea>
                         </div>
                         <div class="col-12">
                             <h5 class="mb-3" style="font-weight: bold;">Цена</h5>
-                            <input class="form-control" readonly style="border: 1px solid black;">
+                            <input class="form-control" readonly style="border: 1px solid black;" value="Загрузка...">
                         </div>
                         <div class="col-12">
                             <h5 class="mb-3" style="font-weight: bold;">Адрес</h5>
-                            <div><span >Район, улица, дом</span></div>
-                            <div><span >Общежитие №...(если есть)</span></div>
+                            <div><span>Загрузка адреса...</span></div>
+                            <div><span></span></div>
                         </div>
                         <div class="card mb-3" style="margin-top: 30px; max-width: 100%; background: rgb(243, 243, 243);">
                             <div class="row g-0">
                               <div class="col-md-3">
-                                <img src="{{ url_for('static', path='image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                                <img src="{{ url_for('static', path='image/noLogoItem900.png') }}" class="rounded-start" alt="Фото продавца" style="width: 90%; padding: 20px; padding-right: 0px;">
                               </div>
                               <div class="col-md-9" >
                                 <div class="card-body" >
-                                    <h3 class="card-title chatTextNameSaler" style="font-weight: bold;">Имя продавца</h3>
-                                    <p class="card-text chatTextNameProduct" style="font-weight: bold; font-size: 20px;">Email/Tg</p>
-                                    <p class="card-text chatTextNameProduct" style="font-size: 20px;">iiv1@tpu.ru / @vanya</p>
+                                    <h3 class="card-title chatTextNameSaler" style="font-weight: bold;">Загрузка...</h3>
+                                    <p class="card-text chatTextNameProduct" style="font-weight: bold; font-size: 20px;">Контакты:</p>
+                                    <p class="card-text chatTextNameProduct" style="font-size: 20px;">Загрузка контактов...</p>
                                     <div style="display: flex; align-items: end; justify-content: end; ">
-
                                       <a href="chat.html"><button class=" buttonProduct borderBlack" style="margin-top: 20px; width: 350px; " type="button"><span class="buttonProductText">Открыть чат с продавцом</span></button></a>
                                     </div>
                                 </div>

@@ -13,7 +13,7 @@ from sqlmodel import select
 from starlette.responses import RedirectResponse, JSONResponse
 
 from user_service import templates, settings
-from user_service.db.models import UserPhoto, Dormitory
+from user_service.db.models import UserPhoto, Dormitory, User
 from user_service.db.session import get_db
 from user_service.api.models import User_sc
 from user_service.api.actions.user import _get_user_by_id, _delete_user_by_id, _update_user_by_id, _create_new_user
@@ -311,3 +311,40 @@ async def update_additional_info(
         return JSONResponse(content={"error": "Invalid token"}, status_code=401)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+
+@user_router.get("/new-product")
+async def redirect_to_new_product(request: Request):
+    return RedirectResponse(url="http://localhost:8081/ads/newProduct")
+
+@user_router.get("/ads/")
+async def redirect_to_ads(request: Request):
+    return RedirectResponse(url="http://localhost:8081/ads/")
+
+
+@user_router.get("/user/profile/json/{user_id}", response_class=JSONResponse)
+async def get_user_profile_json(
+        user_id: str,  # Изменено с UUID на str для более гибкой обработки
+        db: AsyncSession = Depends(get_db)
+):
+    try:
+        # Пробуем преобразовать в UUID, если это возможно
+        user_uuid = UUID(user_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid user ID format")
+
+    async with db.begin():
+        user_dal = UserDAL(db)
+        user = await user_dal.get_user_by_id(user_uuid)
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return {
+            "user_id": str(user.user_id),
+            "first_name": user.first_name or "",
+            "last_name": user.last_name or "",
+            "email": user.email or "",
+            "phone": user.phone_number or "",
+            "telegram_id": user.telegram_id or "",
+            "user_photo": user.photo[0].file_path if user.photo and len(user.photo) > 0 else "/static/img/noLogoItem900.png"
+        }
