@@ -361,11 +361,11 @@ async def update_additional_info(
 
 @user_router.get("/new-product")
 async def redirect_to_new_product(request: Request):
-    return RedirectResponse(url="http://localhost:8001/ads/newProduct")
+    return RedirectResponse(url="http://127.0.0.1:8001/ads/newProduct")
 
 @user_router.get("/ads/")
 async def redirect_to_ads(request: Request):
-    return RedirectResponse(url="http://localhost:8001/ads/")
+    return RedirectResponse(url="http://127.0.0.1:8001/ads/")
 
 
 @user_router.get("/user/profile/json/{user_id}", response_class=JSONResponse)

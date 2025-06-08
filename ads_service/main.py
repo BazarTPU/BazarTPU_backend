@@ -18,18 +18,18 @@ Base = declarative_base()
 app = FastAPI()
 main_api_router = APIRouter()
 
-app.mount("/ads/static", StaticFiles(directory="static"), name="static")
+app.mount("/ads/static", StaticFiles(directory="ads_service/static"), name="static")
 
 main_api_router.include_router(ads_router, prefix="/ads", tags=["ads"])
 app.include_router(main_api_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8001", "http://localhost:8002"],  # The origin of your ads service
+    allow_origins=["http://127.0.0.1:8001", "http://127.0.0.1:8002"],  # The origin of your ads service
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port = 8001)
+    uvicorn.run(app, host="127.0.0.1", port = 8001)

@@ -3,7 +3,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi.logger import logger
-from sqlalchemy import select, delete, or_
+from sqlalchemy import select, delete, or_, and_
 from sqlalchemy.orm import selectinload
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -272,3 +272,86 @@ async def _get_ads_by_user_id(user_id: str, db: AsyncSession) -> List[Ads_sc]:
     except Exception as e:
         logger.error(f"Error in getads_by_user_id: {e}")
         raise HTTPException(status_code=500, detail="Database error occurred")
+
+
+async def _update_ad_by_user(ad_id: int, user_id: str, update_data: dict, session) -> Ads_sc:
+    """Обновление объявления с проверкой прав пользователя"""
+    async with session.begin():
+        # Проверяем, принадлежит ли объявление пользователю
+        result = await session.execute(
+            select(Ads).options(selectinload(Ads.photos)).where(
+                and_(Ads.id == ad_id, Ads.user_id == user_id)
+            )
+        )
+        ad = result.scalar_one_or_none()
+
+        if not ad:
+            raise HTTPException(
+                status_code=404,
+                detail="Объявление не найдено или у вас нет прав на его редактирование"
+            )
+
+        # Обновляем поля
+        for field, value in update_data.items():
+            if field == "photos":
+                # Удаляем все старые фото
+                for photo in ad.photos:
+                    await session.delete(photo)
+                await session.flush()  # Применяем удаление
+
+                # Добавляем новые фото
+                if value:  # Если есть фотографии
+                    ad.photos = [AdPhoto(file_path=path) for path in value]
+            elif value is not None:
+                setattr(ad, field, value)
+
+        await session.flush()
+
+        # Перезагружаем объявление с фотографиями
+        await session.refresh(ad)
+
+        # Загружаем фотографии отдельно
+        result = await session.execute(
+            select(Ads).options(selectinload(Ads.photos)).where(Ads.id == ad.id)
+        )
+        updated_ad = result.scalar_one()
+
+        return Ads_sc(
+            id=updated_ad.id,
+            user_id=updated_ad.user_id,
+            category_id=updated_ad.category_id,
+            title=updated_ad.title,
+            description=updated_ad.description,
+            address=updated_ad.address,
+            dormitory_id=updated_ad.dormitory_id,
+            price=updated_ad.price,
+            photos=[photo.file_path for photo in updated_ad.photos] if updated_ad.photos else [],
+        )
+
+async def _get_ad_for_edit(ad_id: int, user_id: str, session) -> Ads_sc:
+    """Получение объявления для редактирования с проверкой прав"""
+    async with session.begin():
+        result = await session.execute(
+            select(Ads)
+            .options(selectinload(Ads.photos))
+            .where(and_(Ads.id == ad_id, Ads.user_id == user_id))
+        )
+        ad = result.scalar_one_or_none()
+
+        if not ad:
+            raise HTTPException(
+                status_code=404,
+                detail="Объявление не найдено или у вас нет прав на его редактирование"
+            )
+
+        return Ads_sc(
+            id=ad.id,
+            user_id=ad.user_id,
+            category_id=ad.category_id,
+            title=ad.title,
+            description=ad.description,
+            address=ad.address,
+            dormitory_id=ad.dormitory_id,
+            price=ad.price,
+            photos=[photo.file_path for photo in ad.photos] if ad.photos else [],
+        )

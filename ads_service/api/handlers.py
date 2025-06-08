@@ -4,6 +4,7 @@ from uuid import UUID
 import httpx
 from fastapi import APIRouter, Depends, Body, Request, UploadFile, File, Form, Query, HTTPException
 from fastapi.logger import logger
+from fastapi.openapi.models import Response
 from fastapi.params import Path
 from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,16 +14,16 @@ from typing import List
 from sqlalchemy import select
 from fastapi.responses import RedirectResponse
 
-from ads_service.db.models import Ads
+from ads_service.db.models import Ads, Categories, Dormitory
 from ads_service.db.session import get_db
 from ads_service.api.models import Ads_sc, Category_sc, Dormitory_sc, AdUpdate_sc
 from ads_service.api.actions.ads import _create_new_ad, _create_new_category, _create_new_dormitory, _delete_dormitory, \
     _delete_ad, _delete_category, _update_ad, _get_all_ads, _get_search_ads, _get_ads_by_category, _get_one_ad, \
-    _get_ads_by_user_id
+    _get_ads_by_user_id, _get_ad_for_edit, _update_ad_by_user
 from fastapi.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 from user_service import settings
-templates = Jinja2Templates(directory='templates')
+templates = Jinja2Templates(directory='ads_service/templates')
 
 
 ads_router = APIRouter()
@@ -62,7 +63,7 @@ async def create_new_ad(
     photo_paths = []
     if photos:
         import os
-        upload_dir = "static/uploads"
+        upload_dir = "ads_service/static/uploads"
         os.makedirs(upload_dir, exist_ok=True)
         for photo in photos:
             file_location = os.path.join(upload_dir, photo.filename)
@@ -124,7 +125,7 @@ async def new_product(request: Request):
     try:
         user_id = await get_current_user(request)
     except HTTPException:
-        return RedirectResponse(url="http://localhost:8002/auth/login")
+        return RedirectResponse(url="http://127.0.0.1:8002/auth/login")
 
     return templates.TemplateResponse("newProduct.html", {"request": request})
 
@@ -185,7 +186,7 @@ async def get_ad_json(ad_id:int, db: AsyncSession = Depends(get_db)):
 
 @ads_router.get("/profile")
 async def redirect_to_profile(request: Request):
-    return RedirectResponse(url="http://localhost:8002/user/profile")
+    return RedirectResponse(url="http://127.0.0.1:8002/user/profile")
 
 
 @ads_router.get("/Product/{ad_id}", response_class=HTMLResponse)
@@ -229,9 +230,8 @@ async def proxy_user_profile(user_id: str, request: Request):
 
             # Пробуем разные варианты URL для подключения к user service
             urls_to_try = [
-                f"http://localhost:8002/user/profile/json/{user_id}",  # Если работает через localhost
+                f"http://127.0.0.1:8002/user/profile/json/{user_id}",
                 f"http://user-service:8002/user/profile/json/{user_id}",  # Docker compose имя
-                f"http://127.0.0.1:8002/user/profile/json/{user_id}"  # Альтернативный localhost
             ]
 
             last_error = None
@@ -309,5 +309,125 @@ async def get_user_ads(
         )
 
 
+@ads_router.get("/edit/{ad_id}", response_class=HTMLResponse)
+async def edit_ad_page(
+        request: Request,
+        ad_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    """Страница редактирования объявления"""
+    try:
+        user_id = await get_current_user(request)
+    except HTTPException:
+        return RedirectResponse(url="http://127.0.0.1:8002/auth/login")
+
+    try:
+        # Получаем объявление для редактирования
+        ad = await _get_ad_for_edit(ad_id, user_id, db)
+
+        # Получаем категории и общежития для форм
+        categories_result = await db.execute(select(Categories))
+        categories = categories_result.scalars().all()
+
+        dormitories_result = await db.execute(select(Dormitory))
+        dormitories = dormitories_result.scalars().all()
+
+        return templates.TemplateResponse(
+            "editProduct.html",
+            {
+                "request": request,
+                "ad": ad,
+                "categories": categories,
+                "dormitories": dormitories
+            }
+        )
+    except HTTPException as e:
+        return templates.TemplateResponse(
+            "error.html",
+            {
+                "request": request,
+                "error": e.detail
+            }
+        )
 
 
+@ads_router.put("/edit/{ad_id}")
+async def update_user_ad(
+        ad_id: int,
+        request: Request,
+        category_id: int = Form(...),
+        title: str = Form(...),
+        description: str = Form(...),
+        address: str = Form(None),
+        dormitory_id: int = Form(None),
+        price: float = Form(...),
+        photos: list[UploadFile] = File(None),
+        keep_photos: str = Form(""),  # ID существующих фото для сохранения
+        db: AsyncSession = Depends(get_db)
+):
+    """Обновление объявления пользователя"""
+    try:
+        user_id = await get_current_user(request)
+    except HTTPException:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    # Обработка фотографий
+    photo_paths = []
+
+    # Сохраняем существующие фото, если указано
+    if keep_photos:
+        existing_photos = keep_photos.split(",")
+        photo_paths.extend([photo.strip() for photo in existing_photos if photo.strip()])
+
+    # Добавляем новые фото
+    if photos:
+        import os
+        upload_dir = "ads_service/static/uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+
+        for photo in photos:
+            # Проверяем, что файл не пустой и имеет имя
+            if photo.filename and photo.filename.strip() and photo.size > 0:
+                try:
+                    # Генерируем уникальное имя файла
+                    import uuid
+                    file_extension = photo.filename.split('.')[-1] if '.' in photo.filename else 'jpg'
+                    unique_filename = f"{uuid.uuid4()}.{file_extension}"
+                    file_location = os.path.join(upload_dir, unique_filename)
+
+                    # Читаем содержимое файла
+                    content = await photo.read()
+
+                    # Проверяем, что содержимое не пустое
+                    if content:
+                        with open(file_location, "wb") as f:
+                            f.write(content)
+                        photo_paths.append(f"/ads/static/uploads/{unique_filename}")
+                except Exception as e:
+                    print(f"Error processing photo {photo.filename}: {e}")
+                    # Продолжаем обработку других фотографий
+                    continue
+
+    # Проверяем, что есть хотя бы одна фотография
+    if not photo_paths:
+        raise HTTPException(status_code=400, detail="Объявление должно содержать минимум 1 фотографию")
+
+    # Подготавливаем данные для обновления
+    update_data = {
+        "category_id": category_id,
+        "title": title,
+        "description": description,
+        "address": address if address else None,
+        "dormitory_id": dormitory_id if dormitory_id else None,
+        "price": price,
+        "photos": photo_paths
+    }
+
+    try:
+        updated_ad = await _update_ad_by_user(ad_id, user_id, update_data, db)
+        return {"success": True, "ad": updated_ad}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error updating ad: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
