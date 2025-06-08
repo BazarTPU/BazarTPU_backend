@@ -6,6 +6,7 @@ from ads_service import settings
 from ads_service.api.handlers import ads_router
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 engine = create_async_engine(settings.REAL_DATABASE_URL, future=True, echo=True)
 
@@ -17,10 +18,18 @@ Base = declarative_base()
 app = FastAPI()
 main_api_router = APIRouter()
 
-app.mount("/ads/static", StaticFiles(directory="ads_service/static"), name="static")
+app.mount("/ads/static", StaticFiles(directory="static"), name="static")
 
 main_api_router.include_router(ads_router, prefix="/ads", tags=["ads"])
 app.include_router(main_api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8001", "http://localhost:8002"],  # The origin of your ads service
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port = 8001)

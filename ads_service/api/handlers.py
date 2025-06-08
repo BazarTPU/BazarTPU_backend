@@ -3,6 +3,7 @@ from uuid import UUID
 
 import httpx
 from fastapi import APIRouter, Depends, Body, Request, UploadFile, File, Form, Query, HTTPException
+from fastapi.logger import logger
 from fastapi.params import Path
 from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,10 +13,12 @@ from typing import List
 from sqlalchemy import select
 from fastapi.responses import RedirectResponse
 
+from ads_service.db.models import Ads
 from ads_service.db.session import get_db
 from ads_service.api.models import Ads_sc, Category_sc, Dormitory_sc, AdUpdate_sc
 from ads_service.api.actions.ads import _create_new_ad, _create_new_category, _create_new_dormitory, _delete_dormitory, \
-    _delete_ad, _delete_category, _update_ad, _get_all_ads, _get_search_ads, _get_ads_by_category, _get_one_ad
+    _delete_ad, _delete_category, _update_ad, _get_all_ads, _get_search_ads, _get_ads_by_category, _get_one_ad, \
+    _get_ads_by_user_id
 from fastapi.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
 from user_service import settings
@@ -59,7 +62,7 @@ async def create_new_ad(
     photo_paths = []
     if photos:
         import os
-        upload_dir = "ads_service/static/uploads"
+        upload_dir = "static/uploads"
         os.makedirs(upload_dir, exist_ok=True)
         for photo in photos:
             file_location = os.path.join(upload_dir, photo.filename)
@@ -121,7 +124,7 @@ async def new_product(request: Request):
     try:
         user_id = await get_current_user(request)
     except HTTPException:
-        return RedirectResponse(url="http://localhost:8080/auth/login")
+        return RedirectResponse(url="http://localhost:8002/auth/login")
 
     return templates.TemplateResponse("newProduct.html", {"request": request})
 
@@ -182,7 +185,7 @@ async def get_ad_json(ad_id:int, db: AsyncSession = Depends(get_db)):
 
 @ads_router.get("/profile")
 async def redirect_to_profile(request: Request):
-    return RedirectResponse(url="http://localhost:8080/user/profile")
+    return RedirectResponse(url="http://localhost:8002/user/profile")
 
 
 @ads_router.get("/Product/{ad_id}", response_class=HTMLResponse)
@@ -226,9 +229,9 @@ async def proxy_user_profile(user_id: str, request: Request):
 
             # Пробуем разные варианты URL для подключения к user service
             urls_to_try = [
-                f"http://localhost:8080/user/profile/json/{user_id}",  # Если работает через localhost
-                f"http://user-service:8080/user/profile/json/{user_id}",  # Docker compose имя
-                f"http://127.0.0.1:8080/user/profile/json/{user_id}"  # Альтернативный localhost
+                f"http://localhost:8002/user/profile/json/{user_id}",  # Если работает через localhost
+                f"http://user-service:8002/user/profile/json/{user_id}",  # Docker compose имя
+                f"http://127.0.0.1:8002/user/profile/json/{user_id}"  # Альтернативный localhost
             ]
 
             last_error = None
@@ -270,4 +273,41 @@ async def proxy_user_profile(user_id: str, request: Request):
     except Exception as e:
         print(f"Unexpected error in proxy_user_profile: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@ads_router.get("/user/ads/{user_id}", response_model=List[Ads_sc])
+async def get_user_ads(
+        user_id: str,
+        db: AsyncSession = Depends(get_db)
+) -> List[Ads_sc]:
+    """Получить все объявления конкретного пользователя"""
+
+    # Валидация UUID вынесена в отдельную функцию
+    try:
+        UUID(user_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid user ID format. Must be a valid UUID."
+        )
+
+    logger.info(f"Getting ads for user_id: {user_id}")
+
+    try:
+        ads_list = await _get_ads_by_user_id(user_id, db)  # Исправлено: убран лишний underscore
+        logger.info(f"Found {len(ads_list)} ads for user {user_id}")
+        return ads_list
+
+    except HTTPException:
+        # Переброс HTTP исключений без изменений
+        raise
+    except Exception as e:
+        logger.error(f"Unexpected error in get_user_ads: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="An unexpected error occurred while retrieving ads"
+        )
+
+
+
 

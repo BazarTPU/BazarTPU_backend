@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         const res = await fetch(`/ads/one_ad_json/${adId}`);
         if (res.ok) {
             const ad = await res.json();
-            // const ad = ads.find(a => a.id == adId);
             if (!ad) return;
+
             // Название
             document.querySelector('h2.mb-3').textContent = ad.title;
             // Описание
@@ -22,13 +22,14 @@ document.addEventListener('DOMContentLoaded', async function() {
             const addressDivs = document.querySelectorAll('.col-12 > div > span');
             if (addressDivs.length > 0) addressDivs[0].textContent = ad.address || '';
             if (addressDivs.length > 1) addressDivs[1].textContent = ad.dormitory_id ? `Общежитие №${ad.dormitory_id}` : '';
+
             // Фото
             const photos = ad.photos && ad.photos.length ? ad.photos : ["/ads/static/image/noLogoItem900.png"];
             // Основное фото
             document.getElementById('currentPhoto').src = photos[0];
             // Миниатюры
             let blockPhotos = document.getElementById('blockPhotos');
-            photos.forEach((photo, idx) => {
+photos.forEach((photo, idx) => {
                 // const thumb = document.getElementById('currentPhoto' + idx);
                 // if (thumb) thumb.src = photo;
                 let button =``;
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
                 blockPhotos.innerHTML += button;
             });
+            await loadUserData(ad.user_id);
         }
     } catch (e) {
         console.error('Ошибка загрузки объявления', e);
@@ -119,7 +121,7 @@ function setUserPhoto(userPhotoElement, userPhotoPath) {
         userPhotoElement.onerror = function() {
             console.error('Ошибка загрузки дефолтного аватара');
             // Попробуем альтернативный путь для дефолтного изображения
-            this.src = 'http://localhost:8080/static/img/noLogoItem900.png';
+            this.src = 'http://localhost:8002/static/img/noLogoItem900.png';
             this.onerror = null; // Убираем обработчик, чтобы избежать бесконечного цикла
         };
         return;
@@ -150,7 +152,7 @@ function setUserPhoto(userPhotoElement, userPhotoPath) {
         if (!photoSrc.includes('noLogoItem900')) {
             // Попробуем прямой порт микросервиса (например, 8080)
             const fileName = userPhotoPath.split('/').pop();
-            const alternativeUrl = `http://localhost:8080/static/uploads/avatars/${fileName}`;
+            const alternativeUrl = `http://localhost:8002/static/uploads/avatars/${fileName}`;
 
             if (this.src !== alternativeUrl) {
                 this.src = alternativeUrl;
@@ -165,7 +167,7 @@ function setUserPhoto(userPhotoElement, userPhotoPath) {
 
         // Последняя попытка для дефолтного изображения
         this.onerror = function() {
-            this.src = 'http://localhost:8080/static/img/noLogoItem900.png';
+            this.src = 'http://localhost:8002/static/img/noLogoItem900.png';
             this.onerror = null; // Убираем обработчик
         };
     };

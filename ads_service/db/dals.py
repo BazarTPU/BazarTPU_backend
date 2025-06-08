@@ -1,7 +1,7 @@
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from ads_service.db.models import Ads, Categories, Dormitory, AdPhoto
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 

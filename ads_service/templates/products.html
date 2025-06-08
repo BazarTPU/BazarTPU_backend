@@ -109,7 +109,7 @@
           <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
             
     
-            <a href="http://localhost:8081/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+            <a href="http://localhost:8001/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
                 <img src="{{ url_for('static', path='image/tpuLogo.png') }}" alt="LOGO" width="70px">
                 <span class="mainName">Базар</span>
             </a>
@@ -121,8 +121,8 @@
             
             <!-- <img src="image/Lupa.webp" alt="" class="lupa" height="35px"> -->
             <div class="text-end ">
-              <a href="http://localhost:8081/ads/newProduct"><button class="buttonHeader">Разместить объявление</button></a>
-              <a href="http://localhost:8080/user/profile"><button class="buttonHeader">Профиль</button></a>
+              <a href="http://localhost:8001/ads/newProduct"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="http://localhost:8002/user/profile"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
         </div>
@@ -142,7 +142,6 @@
                                 <button class="backOrNextPhoto" onclick="clickNextOrBack(1)" type="button"><img src="{{ url_for('static', path='image/nextPhoto.png') }}" alt="Вперёд" style="width: 30px;"></button>
                             </div>
                             <div id="blockPhotos" style="margin-top: 20px; display: flex; flex-wrap: wrap">
-
                                 <!-- Миниатюры будут загружены динамически -->
                             </div>
                         </div>

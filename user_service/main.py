@@ -28,16 +28,16 @@ app.include_router(user_router)
 app.add_middleware(AuthMiddleware)
 
 
-app.mount("/static", StaticFiles(directory="user_service/static"), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 # app.mount("/ads/static", StaticFiles(directory="ads_service/static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=["http://localhost:8002"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port = 8080)
+    uvicorn.run(app, host="localhost", port = 8002)

@@ -91,7 +91,8 @@
           const result = await response.json();
 
           if (response.ok) {
-            window.location.href = '/user/profile';
+            // Перенаправляем на ads service после успешного сохранения
+            window.location.href = 'http://localhost:8001/ads/';
           } else {
             alert('Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'));
           }

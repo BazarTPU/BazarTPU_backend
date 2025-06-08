@@ -1,5 +1,6 @@
 import os
 
+import httpx
 from fastapi import APIRouter, Depends, HTTPException, status, Request, UploadFile, File
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -25,6 +26,7 @@ templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / 
 BASE_DIR = Path(__file__).parent.parent.parent  # Путь к корню проекта
 AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/static/uploads/avatars"
 os.makedirs(AVATAR_UPLOAD_DIR, exist_ok=True)  # Создаем папку, если её нет
+
 
 @user_router.get("/user/profile", response_class=HTMLResponse)
 async def get_profile_page(
@@ -64,6 +66,46 @@ async def get_profile_page(
 
             user_photo = user.photo[0].file_path if user.photo else "/static/img/noLogoItem900.png"
 
+            # Получаем объявления пользователя - ИСПРАВЛЕНО
+            user_ads = []
+            try:
+                print(f"Trying to fetch ads for user_id: {user_id}")
+                async with httpx.AsyncClient() as client:
+                    urls_to_try = [
+                        f"http://localhost:8001/ads/user/ads/{user_id}",
+                        f"http://ads-service:8001/ads/user/ads/{user_id}",
+                        f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
+                    ]
+
+                    for url in urls_to_try:
+                        try:
+                            print(f"Trying URL: {url}")
+                            response = await client.get(
+                                url,
+                                timeout=5.0,
+                                headers={
+                                    "Content-Type": "application/json",
+                                    "Accept": "application/json"
+                                }
+                            )
+                            print(f"Response status: {response.status_code}")
+
+                            if response.status_code == 200:
+                                user_ads = response.json()
+                                print(f"Successfully fetched {len(user_ads)} ads")
+                                break
+                            else:
+                                print(f"Failed with status {response.status_code}: {response.text}")
+                        except Exception as e:
+                            print(f"Error with URL {url}: {e}")
+                            continue
+
+            except Exception as e:
+                print(f"Error fetching user ads: {e}")
+                user_ads = []
+
+            print(f"Final user_ads count: {len(user_ads)}")
+
             user_data = {
                 "first_name": user.first_name or "",
                 "last_name": user.last_name or "",
@@ -72,14 +114,19 @@ async def get_profile_page(
                 "telegram_id": user.telegram_id or "",
                 "dormitories": [dorm.name for dorm in dormitories],
                 "dormitory_id": user.dormitory.name if user.dormitory else "",
-                "user_photo": user_photo
+                "user_photo": user_photo,
+                "user_ads": user_ads  # Передаем объявления пользователя
             }
 
             return templates.TemplateResponse(
                 "profileInfo.html",
                 {"request": request, "user": user_data}
             )
-    except JWTError:
+    except JWTError as e:
+        print(f"JWT Error: {e}")
+        return RedirectResponse(url="/auth/login", status_code=302)
+    except Exception as e:
+        print(f"Unexpected error in get_profile_page: {e}")
         return RedirectResponse(url="/auth/login", status_code=302)
 
 
@@ -314,11 +361,11 @@ async def update_additional_info(
 
 @user_router.get("/new-product")
 async def redirect_to_new_product(request: Request):
-    return RedirectResponse(url="http://localhost:8081/ads/newProduct")
+    return RedirectResponse(url="http://localhost:8001/ads/newProduct")
 
 @user_router.get("/ads/")
 async def redirect_to_ads(request: Request):
-    return RedirectResponse(url="http://localhost:8081/ads/")
+    return RedirectResponse(url="http://localhost:8001/ads/")
 
 
 @user_router.get("/user/profile/json/{user_id}", response_class=JSONResponse)
@@ -348,3 +395,65 @@ async def get_user_profile_json(
             "telegram_id": user.telegram_id or "",
             "user_photo": user.photo[0].file_path if user.photo and len(user.photo) > 0 else "/static/img/noLogoItem900.png"
         }
+
+@user_router.get("/user/ads/{user_id}")
+async def get_user_ads_proxy(user_id: str, request: Request):
+    """Proxy для получения объявлений пользователя из ads service"""
+    try:
+        # Проверяем, что user_id - это UUID
+        try:
+            UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid user ID format")
+
+        async with httpx.AsyncClient() as client:
+            # Передаем cookies из оригинального запроса
+            cookies = request.cookies
+            headers = {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+
+            # Пробуем разные варианты URL для подключения к ads service
+            urls_to_try = [
+                f"http://localhost:8001/ads/user/ads/{user_id}",
+                f"http://ads-service:8001/ads/user/ads/{user_id}",
+                f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
+            ]
+
+            last_error = None
+            for url in urls_to_try:
+                try:
+                    print(f"Trying to connect to: {url}")
+                    response = await client.get(
+                        url,
+                        headers=headers,
+                        cookies=cookies,
+                        timeout=5.0
+                    )
+
+                    if response.status_code == 200:
+                        print(f"Successfully connected to: {url}")
+                        return response.json()
+                    else:
+                        last_error = f"HTTP {response.status_code}: {response.text}"
+                        print(f"Failed with status {response.status_code} for {url}")
+
+                except httpx.ConnectError as e:
+                    last_error = f"Connection error: {str(e)}"
+                    print(f"Connection error for {url}: {e}")
+                    continue
+                except httpx.TimeoutException as e:
+                    last_error = f"Timeout error: {str(e)}"
+                    print(f"Timeout error for {url}: {e}")
+                    continue
+
+            # Если все URL не сработали, возвращаем пустой список
+            print(f"All connection attempts failed. Last error: {last_error}")
+            return []
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Unexpected error in get_user_ads_proxy: {str(e)}")
+        return []

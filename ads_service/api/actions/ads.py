@@ -1,7 +1,11 @@
 from re import search
+from typing import List
+from uuid import UUID
 
+from fastapi.logger import logger
 from sqlalchemy import select, delete, or_
 from sqlalchemy.orm import selectinload
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from ads_service.db.dals import AdDAL
 from ads_service.api.models import Ads_sc, Category_sc, Dormitory_sc, AdUpdate_sc
@@ -233,3 +237,38 @@ async def _get_one_ad(session, ad_id: int):
             )
 
         return res
+
+async def _get_ads_by_user_id(user_id: str, db: AsyncSession) -> List[Ads_sc]:
+    """Получить все объявления пользователя"""
+    try:
+        # Запрос с явным указанием загрузки связанных данных
+        # Можно сравнивать строку напрямую, SQLAlchemy сам преобразует
+        query = (
+            select(Ads)
+            .options(selectinload(Ads.photos))  # Эффективная загрузка фото
+            .where(Ads.user_id == user_id)  # Сравниваем со строкой напрямую
+            .order_by(Ads.id.desc())  # Сортировка по убыванию ID
+        )
+
+        result = await db.execute(query)
+        ads = result.scalars().all()
+
+        # Преобразуем в схему с правильной обработкой фотографий
+        return [
+            Ads_sc(
+                id=ad.id,
+                user_id=ad.user_id,
+                category_id=ad.category_id,
+                title=ad.title,
+                description=ad.description,
+                address=ad.address,
+                dormitory_id=ad.dormitory_id,
+                price=ad.price,
+                photos=[photo.file_path for photo in ad.photos] if ad.photos else [],  # Исправлено: используем file_path вместо url
+            )
+            for ad in ads
+        ]
+
+    except Exception as e:
+        logger.error(f"Error in getads_by_user_id: {e}")
+        raise HTTPException(status_code=500, detail="Database error occurred")

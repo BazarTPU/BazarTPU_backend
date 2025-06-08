@@ -55,26 +55,29 @@
   e.preventDefault();
 
   try {
-    const response = await fetch('/auth/token', {
+    const response = await fetch('http://localhost:8002/auth/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: `username=${encodeURIComponent(document.getElementById("emailInput").value)}&password=${encodeURIComponent(document.querySelector("input[type='password']").value)}`,
-      credentials: 'include'  // Critical for handling cookies!
+      credentials: 'include'
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      console.log("Login successful, redirecting to:", data.redirect_url);
-      window.location.href = data.redirect_url || "/user/profile";
+      if (data.redirect_url.includes("additional-info")) {
+        window.location.href = "http://localhost:8002" + data.redirect_url;
+      } else if (data.redirect_url.includes("/user/profile")) {
+        window.location.href = "http://localhost:8002" + data.redirect_url;
+      } else {
+        window.location.href = "http://localhost:8001/ads/";
+      }
     } else {
-      console.error("Login error:", data.detail);
       alert(`Ошибка авторизации: ${data.detail || 'Проверьте email и пароль.'}`);
     }
   } catch (error) {
-    console.error("Authentication error:", error);
     alert("Произошла ошибка при авторизации. Пожалуйста, попробуйте еще раз.");
   }
 });
