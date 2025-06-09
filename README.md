@@ -64,7 +64,7 @@ uvicorn ads_service.main:app --port 8001 --reload
 <h3>user_service (порт 8000)</h3>
 
 ```bash
-uvicorn user_service.main:app --port 8000 --reload
+uvicorn user_service.main:app --port 8002 --reload
 ```
 
-<p>📌 Флаг <code>--reload</code> автоматически перезапускает сервер при изменениях в коде.</p> <hr> <h2>📫 Документация API</h2> <ul> <li><a href="http://localhost:8000/docs" target="_blank">http://localhost:8000/docs</a> — user_service</li> <li><a href="http://localhost:8001/docs" target="_blank">http://localhost:8001/docs</a> — ads_service</li> </ul>
+<p>📌 Флаг <code>--reload</code> автоматически перезапускает сервер при изменениях в коде.</p> <hr> <h2>📫 Документация API</h2> <ul> <li><a href="http://localhost:8002/docs" target="_blank">http://localhost:8002/docs</a> — user_service</li> <li><a href="http://localhost:8001/docs" target="_blank">http://localhost:8001/docs</a> — ads_service</li> </ul>
