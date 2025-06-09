@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const photos    = form.querySelector('#photos');
   const errPhoto  = form.querySelector('#error-photo-required');
   const priceErr  = form.querySelector('#price-error');
+  const zip   = form.querySelector('#zip');
 
   const textRule = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
   // const textRuleTextArea = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
@@ -199,12 +200,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function validateLocation() {
+    const ok = state.value !== '' || zip.value.trim() !== '';
+    state.classList.toggle('is-invalid', !ok);
+    zip.classList.toggle('is-invalid',   !ok);
+    return ok;
+  }
+  state.addEventListener('change', validateLocation);
+  zip.addEventListener('input',   validateLocation);
+
   form.addEventListener('submit', async e => {
     e.preventDefault();
     e.stopImmediatePropagation();
 
+
+    let valid = true;
     // 0) фото
-    let valid = checkPhotos();
+    valid = checkPhotos();
 
     // 1) категория
     valid = checkField(country, v => v !== '') && valid;
@@ -216,15 +228,28 @@ document.addEventListener('DOMContentLoaded', () => {
     valid = checkField(desc, v => textRuleTextArea.test(v)) && valid;
 
     // 4) местоположение (общее)
-    valid = checkField(state, v => v !== '') && valid;
+    // valid = checkField(state, v => v !== '') && valid;
+    // 
+    const locValid = validateLocation();
+    valid = valid && locValid;
 
-    
+    const stateEl = form.querySelector('#state');
+    stateEl.classList.toggle('is-invalid', !locValid);
+    zip.classList.toggle('is-invalid',   !locValid);
+
+    valid = valid && locValid;
 
     if (!valid) {
       // фокус на первое невалидное
       const bad = form.querySelector('.is-invalid');
       if (bad) bad.focus();
       return;
+    }
+
+    if (state.value === '') {
+      state.disabled = true;      // public dormitory_id
+    } else {
+      zip.disabled = true;        // public address
     }
 
     // всё валидно — собираем и шлём

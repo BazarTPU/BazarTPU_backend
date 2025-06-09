@@ -107,7 +107,7 @@
 <body>
     <header class=" text-bg-white ">
         <div class="container headerMain " >
-          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start ">
+          <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-start ">
             
     
             <a href="http://127.0.0.1:8001/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
@@ -137,7 +137,7 @@
                   <form class="needs-validation" novalidate="">
                     <div class="row g-3">
                         <div class="col-md-6" >
-                            <div style="display: flex; justify-items: center; width: 600px; height: 600px;">
+                            <div style="display: flex; justify-items: center; width: clamp(250px, 50vw, 600px); height: clamp(250px, 50vw, 600px);">
                                 <button class="backOrNextPhoto" onclick="clickNextOrBack(0)" type="button"><img src="{{ url_for('static', path='image/backPhoto.png') }}" alt="Назад" style="width: 30px; "></button>
                                 <img src="{{ url_for('static', path='image/photoProduct1.png') }}" id="currentPhoto" alt="" style="width: 100%; height: 100%; object-fit: contain; border: 1px solid black;">
                                 <button class="backOrNextPhoto" onclick="clickNextOrBack(1)" type="button"><img src="{{ url_for('static', path='image/nextPhoto.png') }}" alt="Вперёд" style="width: 30px;"></button>
@@ -162,7 +162,7 @@
                         <div class="card mb-3" style="margin-top: 30px; max-width: 100%; background: rgb(243, 243, 243);">
                             <div class="row g-0">
                               <div class="col-md-3">
-                                <img src="{{ url_for('static', path='image/noLogoItem900.png') }}" class="rounded-start" alt="Фото продавца" style="width: 90%; padding: 20px; padding-right: 0px;">
+                                <img src="{{ url_for('static', path='image/noLogoItem900.png') }}" class="rounded-start" alt="Фото продавца" style="width: clamp(180px, 15vw, 90%); padding: 20px; padding-right: 0px;">
                               </div>
                               <div class="col-md-9" >
                                 <div class="card-body" >
@@ -170,7 +170,7 @@
                                     <p class="card-text chatTextNameProduct" style="font-weight: bold; font-size: 20px;">Контакты:</p>
                                     <p class="card-text chatTextNameProduct" style="font-size: 20px;">Загрузка контактов...</p>
                                     <div style="display: flex; align-items: end; justify-content: end; ">
-                                      <a href="chat.html"><button class=" buttonProduct borderBlack" style="margin-top: 20px; width: 350px; " type="button"><span class="buttonProductText">Открыть чат с продавцом</span></button></a>
+                                      <a href="chat.html"><button class=" buttonProduct borderBlack" style="margin-top: 20px; width: 300px; " type="button"><span class="buttonProductText">Открыть чат с продавцом</span></button></a>
                                     </div>
                                 </div>
                               </div>
