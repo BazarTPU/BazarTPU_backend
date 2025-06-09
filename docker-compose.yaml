@@ -3,24 +3,68 @@ services:
     image: postgres:17-alpine
     restart: always
     environment:
-      POSTGRES_DB: BazarTPU_ads
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB_ADS}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5433:5432"
     volumes:
       - ads_postgres_data:/var/lib/postgresql@17/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   db2:
     image: postgres:17-alpine
     restart: always
     environment:
-      POSTGRES_DB: BazarTPU_user
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ${POSTGRES_DB_USER}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5434:5432"
     volumes:
       - user_postgres_data:/var/lib/postgresql@17/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  user_service:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: user_service/Dockerfile
+    ports:
+      - "8002:8000"
+    environment:
+      - USER_DATABASE_URL=${USER_DATABASE_URL}
+      - USER_ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - USER_ALGORITHM=${ALGORITHM}
+      - USER_SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      db2:
+        condition: service_healthy
+
+  ads_service:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: ads_service/Dockerfile
+    ports:
+      - "8001:8000"
+    environment:
+      - ADS_DATABASE_URL=${ADS_DATABASE_URL}
+      - ADS_ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - ADS_ALGORITHM=${ALGORITHM}
+      - ADS_SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      db1:
+        condition: service_healthy
 
 volumes:
   ads_postgres_data:

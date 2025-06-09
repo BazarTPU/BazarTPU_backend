@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-engine = create_async_engine(settings.REAL_DATABASE_URL, future=True, echo=True)
+engine = create_async_engine(settings.ADS_DATABASE_URL, future=True, echo=True)
 
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
@@ -25,7 +25,8 @@ app.include_router(main_api_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8001", "http://127.0.0.1:8002"],  # The origin of your ads service
+    # allow_origins=["http://127.0.0.1:8001", "http://127.0.0.1:8002"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

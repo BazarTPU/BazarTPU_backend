@@ -1,4 +1,3 @@
-from idlelib.query import Query
 from uuid import UUID
 
 import httpx
@@ -22,7 +21,7 @@ from ads_service.api.actions.ads import _create_new_ad, _create_new_category, _c
     _get_ads_by_user_id, _get_ad_for_edit, _update_ad_by_user
 from fastapi.responses import HTMLResponse
 from starlette.templating import Jinja2Templates
-from user_service import settings
+from ads_service import settings
 templates = Jinja2Templates(directory='ads_service/templates')
 
 

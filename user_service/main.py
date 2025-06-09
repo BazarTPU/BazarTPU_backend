@@ -15,7 +15,7 @@ from user_service.api.user_router import user_router
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from fastapi.staticfiles import StaticFiles
 
-engine = create_async_engine(settings.REAL_DATABASE_URL, future=True, echo=True)
+engine = create_async_engine(settings.USER_DATABASE_URL, future=True, echo=True)
 
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
@@ -33,7 +33,8 @@ app.mount("/static", StaticFiles(directory="user_service/static"), name="static"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8002", "http://127.0.0.1:8001"],
+    # allow_origins=["http://127.0.0.1:8002", "http://127.0.0.1:8001"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
