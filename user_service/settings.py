@@ -5,13 +5,13 @@ env = Env()
 
 USER_DATABASE_URL = env.str(
     "USER_DATABASE_URL",
-    default= "postgresql+asyncpg://postgres:postgres@localhost:5434/BazarTPU_user"
+    default= "postgresql+asyncpg://postgres:postgres@localhost:5432/BazarTPU_user"
 )
 
 
 USER_SQLALC_URL = env.str(
     "SQLALC_URL",
-    default="postgresql://postgres:postgres@localhost:5434/BazarTPU_user"
+    default="postgresql://postgres:postgres@localhost:5432/BazarTPU_user"
 )
 
 # ACCESS_TOKEN_EXPIRE_MINUTES = 30
