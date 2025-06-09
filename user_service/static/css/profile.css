@@ -143,3 +143,17 @@
 /* .margin-top-0 {
     margin-top: 0;
 } */
+
+.buttonNewProduct {
+    background: black; 
+    color: white;
+    border-radius: 20px;
+    height: 40px;
+    width: 35%;
+    transition: all 350ms ease;
+}
+
+.buttonNewProduct:hover{
+    color: white;
+    background: rgb(40,190,70);
+}

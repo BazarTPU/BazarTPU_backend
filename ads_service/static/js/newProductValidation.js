@@ -171,7 +171,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const errPhoto  = form.querySelector('#error-photo-required');
   const priceErr  = form.querySelector('#price-error');
 
-  const textRule = /^[A-Za-zА-Яа-я]{2,}[A-Za-zА-Яа-я0-9]*$/;
+  const textRule = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9]*$/;
+  const textRuleTextArea = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
 
   function checkField(field, ruleFn) {
     const ok = ruleFn(field.value.trim());
@@ -203,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
     valid = checkField(title, v => textRule.test(v)) && valid;
 
     // 3) описание
-    valid = checkField(desc, v => textRule.test(v)) && valid;
+    valid = checkField(desc, v => textRuleTextArea.test(v)) && valid;
 
     // 4) местоположение (общее)
     valid = checkField(state, v => v !== '') && valid;
@@ -240,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // снимаем ошибки «на лету»
   title.addEventListener('input',  () => checkField(title, v => textRule.test(v)));
-  desc.addEventListener('input',  () => checkField(desc,  v => textRule.test(v)));
+  desc.addEventListener('input',  () => checkField(desc,  v => textRuleTextArea.test(v)));
   country.addEventListener('change',() => checkField(country, v => v !== ''));
   state.addEventListener('change',() => checkField(state,   v => v !== ''));
   photos.addEventListener('change',() => checkPhotos());
