@@ -1,3 +1,10 @@
+
+document.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') e.preventDefault();
+  });
+});
+
 // ====== Цена: только цифры + диапазон ======
 (function() {
 const input = document.getElementById('price');
@@ -172,7 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const priceErr  = form.querySelector('#price-error');
 
   const textRule = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
-  const textRuleTextArea = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
+  // const textRuleTextArea = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
+  const textRuleTextArea = /^[A-Za-zА-Яа-я"\s]{2,}[A-Za-zА-Яа-я0-9"\s«»!№;%:?*()_+\-=\s]*$/;
+
 
   function checkField(field, ruleFn) {
     const ok = ruleFn(field.value.trim());
