@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const errPhoto  = form.querySelector('#error-photo-required');
   const priceErr  = form.querySelector('#price-error');
 
-  const textRule = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9]*$/;
+  const textRule = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
   const textRuleTextArea = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
 
   function checkField(field, ruleFn) {
