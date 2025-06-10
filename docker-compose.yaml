@@ -32,39 +32,39 @@ services:
       timeout: 5s
       retries: 5
 
-  user_service:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: user_service/Dockerfile
-    ports:
-      - "8002:8002"
-    environment:
-      - USER_DATABASE_URL=${USER_DATABASE_URL}
-      - USER_ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-      - USER_ALGORITHM=${ALGORITHM}
-      - USER_SECRET_KEY=${SECRET_KEY}
-    depends_on:
-      db2:
-        condition: service_healthy
-
-  ads_service:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: ads_service/Dockerfile
-    ports:
-      - "8001:8001"
-    environment:
-      - ADS_DATABASE_URL=${ADS_DATABASE_URL}
-      - ADS_ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-      - ADS_ALGORITHM=${ALGORITHM}
-      - ADS_SECRET_KEY=${SECRET_KEY}
-    depends_on:
-      db1:
-        condition: service_healthy
+#  user_service:
+#    env_file:
+#      - .env
+#    build:
+#      context: .
+#      dockerfile: user_service/Dockerfile
+#    ports:
+#      - "8002:8002"
+#    environment:
+#      - USER_DATABASE_URL=${USER_DATABASE_URL}
+#      - USER_ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+#      - USER_ALGORITHM=${ALGORITHM}
+#      - USER_SECRET_KEY=${SECRET_KEY}
+#    depends_on:
+#      db2:
+#        condition: service_healthy
+#
+#  ads_service:
+#    env_file:
+#      - .env
+#    build:
+#      context: .
+#      dockerfile: ads_service/Dockerfile
+#    ports:
+#      - "8001:8001"
+#    environment:
+#      - ADS_DATABASE_URL=${ADS_DATABASE_URL}
+#      - ADS_ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+#      - ADS_ALGORITHM=${ALGORITHM}
+#      - ADS_SECRET_KEY=${SECRET_KEY}
+#    depends_on:
+#      db1:
+#        condition: service_healthy
 
 volumes:
   ads_postgres_data:

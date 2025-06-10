@@ -368,7 +368,7 @@
     </main>
     <script>
       document.getElementById("phoneNumberField").addEventListener("input", function() {
-        let phonePattern = /^7[0-9]{10}$/;
+        let phonePattern = /^(?:\+7|7|8)\d{10}$/;
         let phoneInput = document.getElementById("phoneNumberField");
         let error = document.getElementById("error-message-phone-change");
         if(phonePattern.test(phoneInput.value)) {
