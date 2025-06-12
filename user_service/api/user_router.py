@@ -20,7 +20,7 @@ from user_service.api.models import User_sc
 from user_service.api.actions.user import _get_user_by_id, _delete_user_by_id, _update_user_by_id, _create_new_user
 from user_service.db.dals import UserDAL
 
-user_router = APIRouter()
+user_router = APIRouter(tags=["User"])
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / "user_service/templates"))
 
 BASE_DIR = Path(__file__).parent.parent.parent  # Путь к корню проекта
@@ -28,7 +28,7 @@ AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/static/uploads/avatars"
 os.makedirs(AVATAR_UPLOAD_DIR, exist_ok=True)  # Создаем папку, если её нет
 
 
-@user_router.get("/user/profile", response_class=HTMLResponse)
+@user_router.get("/profile", response_class=HTMLResponse)
 async def get_profile_page(
         request: Request,
         db: AsyncSession = Depends(get_db)
@@ -72,8 +72,8 @@ async def get_profile_page(
                 print(f"Trying to fetch ads for user_id: {user_id}")
                 async with httpx.AsyncClient() as client:
                     urls_to_try = [
-                        f"http://localhost:8001/ads/user/ads/{user_id}",
-                        f"http://ads-service:8001/ads/user/ads/{user_id}",
+                        # f"http://localhost:8001/ads/user/ads/{user_id}",
+                        # f"http://ads-service:8001/ads/user/ads/{user_id}",
                         f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
                     ]
 
@@ -130,7 +130,7 @@ async def get_profile_page(
         return RedirectResponse(url="/auth/login", status_code=302)
 
 
-@user_router.post("/user/profile/update", response_class=JSONResponse)
+@user_router.post("/profile/update", response_class=JSONResponse)
 async def update_profile(
         request: Request,
         db: AsyncSession = Depends(get_db)
@@ -202,7 +202,7 @@ async def update_profile(
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
 
-@user_router.post("/user/profile/upload-avatar", response_class=JSONResponse)
+@user_router.post("/profile/upload-avatar", response_class=JSONResponse)
 async def upload_avatar(
         request: Request,
         file: UploadFile = File(...),
@@ -279,7 +279,7 @@ async def upload_avatar(
         print(f"Avatar upload error: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
 
-@user_router.get("/user/profile/check")
+@user_router.get("/profile/check")
 async def check_auth(request: Request):
     # Check for token in cookies
     token = request.cookies.get("access_token")
@@ -305,7 +305,7 @@ async def get_user(user_id: UUID, db: AsyncSession = Depends(get_db)):
 async def update_user(user_id: UUID, body: User_sc, db: AsyncSession = Depends(get_db)):
     return await _update_user_by_id(user_id, body, db)
 
-@user_router.post("/user/profile/update-additional-info", response_class=JSONResponse)
+@user_router.post("/profile/update-additional-info", response_class=JSONResponse)
 async def update_additional_info(
         request: Request,
         db: AsyncSession = Depends(get_db)
@@ -361,14 +361,14 @@ async def update_additional_info(
 
 @user_router.get("/new-product")
 async def redirect_to_new_product(request: Request):
-    return RedirectResponse(url="http://127.0.0.1:8001/ads/newProduct")
+    return RedirectResponse(url="/ads/newProduct")
 
 @user_router.get("/ads/")
 async def redirect_to_ads(request: Request):
-    return RedirectResponse(url="http://127.0.0.1:8001/ads/")
+    return RedirectResponse(url="/ads")
 
 
-@user_router.get("/user/profile/json/{user_id}", response_class=JSONResponse)
+@user_router.get("/profile/json/{user_id}", response_class=JSONResponse)
 async def get_user_profile_json(
         user_id: str,  # Изменено с UUID на str для более гибкой обработки
         db: AsyncSession = Depends(get_db)
@@ -396,7 +396,7 @@ async def get_user_profile_json(
             "user_photo": user.photo[0].file_path if user.photo and len(user.photo) > 0 else "/static/img/noLogoItem900.png"
         }
 
-@user_router.get("/user/ads/{user_id}")
+@user_router.get("/ads/{user_id}")
 async def get_user_ads_proxy(user_id: str, request: Request):
     """Proxy для получения объявлений пользователя из ads service"""
     try:

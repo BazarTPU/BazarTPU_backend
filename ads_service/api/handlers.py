@@ -25,7 +25,7 @@ from ads_service import settings
 templates = Jinja2Templates(directory='ads_service/templates')
 
 
-ads_router = APIRouter()
+ads_router = APIRouter(tags=["Auth"])
 
 
 async def get_current_user(request: Request):
@@ -110,7 +110,7 @@ async def delete_ad(ad_id: int, db: AsyncSession = Depends(get_db)):
     return await _delete_ad(ad_id, db)
 
 
-@ads_router.patch("/ads/{ad_id}", response_model=Ads_sc)
+@ads_router.patch("/{ad_id}", response_model=Ads_sc)
 async def update_ad(ad_id: int, update: AdUpdate_sc = Body(...), db: AsyncSession = Depends(get_db)):
     return await _update_ad(ad_id, db, update)
 
@@ -124,7 +124,7 @@ async def new_product(request: Request):
     try:
         user_id = await get_current_user(request)
     except HTTPException:
-        return RedirectResponse(url="http://127.0.0.1:8002/auth/login")
+        return RedirectResponse(url="/auth/login")
 
     return templates.TemplateResponse("newProduct.html", {"request": request})
 
@@ -185,7 +185,7 @@ async def get_ad_json(ad_id:int, db: AsyncSession = Depends(get_db)):
 
 @ads_router.get("/profile")
 async def redirect_to_profile(request: Request):
-    return RedirectResponse(url="http://127.0.0.1:8002/user/profile")
+    return RedirectResponse(url="/user/profile")
 
 
 @ads_router.get("/Product/{ad_id}", response_class=HTMLResponse)
@@ -209,7 +209,7 @@ async def product(request: Request, ad_id: int, db: AsyncSession = Depends(get_d
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@ads_router.get("/user/profile/json/{user_id}")
+@ads_router.get("/profile/json/{user_id}")
 async def proxy_user_profile(user_id: str, request: Request):
     """Proxy requests to user service to avoid CORS issues"""
     try:
@@ -274,7 +274,7 @@ async def proxy_user_profile(user_id: str, request: Request):
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
-@ads_router.get("/user/ads/{user_id}", response_model=List[Ads_sc])
+@ads_router.get("/{user_id}", response_model=List[Ads_sc])
 async def get_user_ads(
         user_id: str,
         db: AsyncSession = Depends(get_db)
@@ -318,7 +318,7 @@ async def edit_ad_page(
     try:
         user_id = await get_current_user(request)
     except HTTPException:
-        return RedirectResponse(url="http://127.0.0.1:8002/auth/login")
+        return RedirectResponse(url="/auth/login")
 
     try:
         # Получаем объявление для редактирования
