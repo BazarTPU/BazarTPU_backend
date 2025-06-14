@@ -46,18 +46,18 @@ jobs:
 
     - name: Setup SSH key
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-        chmod 600 ~/.ssh/deploy_key
-        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+        mkdir -p /home/runner/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > /home/runner/.ssh/deploy_key
+        chmod 600 /home/runner/.ssh/deploy_key
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> /home/runner/.ssh/known_hosts
 
     - name: Deploy to Yandex Cloud
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USERNAME }}
-        key_path: ~/.ssh/deploy_key
-        key_passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+        key_path: /home/runner/.ssh/deploy_key
+        passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
         script: |
           cd /chipoh/
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
