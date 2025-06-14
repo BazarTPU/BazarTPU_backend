@@ -72,5 +72,5 @@ jobs:
         script: |
           cd chipoh
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
-          docker-compose pull
-          docker-compose up -d 
+          sudo docker-compose pull
+          sudo docker-compose up -d 
