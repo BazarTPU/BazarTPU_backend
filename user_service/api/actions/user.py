@@ -1,9 +1,13 @@
-from fastapi import APIRouter
 from uuid import UUID
+
+from select import select
+
 from user_service.db.hashing import Hasher
 from user_service.db.dals import UserDAL
 from user_service.api.models import User_sc
 from fastapi import HTTPException
+
+from user_service.db.models import Dormitory
 
 
 async def _create_new_user(body: User_sc, session) -> User_sc:
@@ -20,9 +24,6 @@ async def _create_new_user(body: User_sc, session) -> User_sc:
             last_name=user.last_name,
             email=user.email,
             password=user.hashed_password,
-            phone_number=user.phone_number,
-            telegram_id=user.telegram_id,
-            user_photo=user.user_photo,
         )
 
 
@@ -49,13 +50,23 @@ async def _get_user_by_id(user_id: UUID, session) -> User_sc:
             password=user.hashed_password,
             phone_number=user.phone_number,
             telegram_id=user.telegram_id,
-            user_photo=user.user_photo,
+            dormitory=user.dormitory.name if user.dormitory else None,
+            user_photo=user.photo[0].file_path if user.photo else "/static/img/noLogoItem900.png",
         )
 
 
 async def _update_user_by_id(user_id: UUID, body: User_sc, session) -> User_sc:
     async with session.begin():
         user_dal = UserDAL(session)
+
+        dormitory_id = None
+        if body.dormitory:
+            query = select(Dormitory).where(Dormitory.name == body.dormitory)
+            result = await session.execute(query)
+            dormitory = result.scalar_one_or_none()
+            if dormitory:
+                dormitory_id = dormitory.id
+
         updated_user = await user_dal.update_user_by_id(
             user_id=user_id,
             first_name=body.first_name,
@@ -63,7 +74,7 @@ async def _update_user_by_id(user_id: UUID, body: User_sc, session) -> User_sc:
             email=body.email,
             phone_number=body.phone_number,
             telegram_id=body.telegram_id,
-            dormitory=body.dormitory,
+            dormitory_id=dormitory_id,
             user_photo=body.user_photo
         )
         if not updated_user:
@@ -75,6 +86,6 @@ async def _update_user_by_id(user_id: UUID, body: User_sc, session) -> User_sc:
             password=updated_user.hashed_password,
             phone_number=updated_user.phone_number,
             telegram_id=updated_user.telegram_id,
-            dormitory=updated_user.dormitory,
+            dormitory=updated_user.dormitory.name if updated_user.dormitory else None,
             user_photo=updated_user.user_photo,
         )

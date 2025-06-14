@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дополнительная информация</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/loginUser.css') }}">
+    <link rel="icon" href="{{ url_for('static', path='img/tpuLogo.png') }}" type="image/png">
+  </head>
+<body>
+    <div class="modal modal-sheet locationLoginUser1">
+      <div class="modal-dialog">
+        <div class="modal-content formBgLoginUser1">
+          <div class="modal-header p-5 pb-4 border-bottom-0">
+            <img src="{{ url_for('static', path='/img/tpuLogoLoginUser1.png') }}" alt="logo TPU" width="100%">
+          </div>
+          <div class="modal-body p-5 pt-0">
+            <form id="additionalInfoForm" action="/user/profile/update-additional-info" method="post">
+              <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label numberPhoneText">Телефон</label>
+                <div class="col-sm-9">
+                  <input type="tel" id="inputNumberPhone" name="phone_number" class="inputLoginUser1 numberPhone" placeholder="79999999999" required>
+                  <span id="error-message-phone" class="errorMessage"><small>Введите корректный номер телефона<br>
+                    Формат 7-999-999-99-99</small></span>
+                </div>
+              </div>
+              <p class="numberPhoneText" style="font-size: 16px;">
+                Можешь выбрать номер своего общежития, это поможет нам предлагать объявления рядом
+              </p>
+              <div class="mb-3">
+                <select class="selectLoginUser2" id="dormitorySelect" name="dormitory_id">
+                  {% for dormitory in dormitories %}
+                  <option value="{{ dormitory }}">{{ dormitory }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <button class="w-100 mb-4 buttonLoginUser1 buttonLoginUser2" type="submit" id="submitBtn">
+                  Продолжить
+              </button>
+              <p class="textLoginUser1">
+                  Сервис объявлений для студентов ТПУ
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // Валидация телефона
+      document.getElementById("inputNumberPhone").addEventListener("input", function() {
+        const phonePattern = /^(?:\+7|7|8)\d{10}$/;
+        // let phonePattern = /^7[0-9]{10}$/;
+        let phoneInput = document.getElementById("inputNumberPhone");
+        let error = document.getElementById("error-message-phone");
+        if(phonePattern.test(phoneInput.value)) {
+          error.style.display = "none";
+        }
+        else {
+          error.style.display = "block"
+        }
+      });
+
+      // Обработка отправки формы
+      document.getElementById("additionalInfoForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const phoneInput = document.getElementById("inputNumberPhone");
+        // const phonePattern = /^7[0-9]{10}$/;
+        // const phonePattern2 = /^8[0-9]{10}$/;
+        const phonePattern = /^(?:\+7|7|8)\d{10}$/;
+
+        // Проверка валидности телефона
+        if (!phonePattern.test(phoneInput.value)) {
+          document.getElementById("error-message-phone").style.display = "block";
+          return;
+        } 
+        
+
+        const formData = {
+          phone_number: phoneInput.value,
+          dormitory_id: document.getElementById("dormitorySelect").value
+        };
+
+        try {
+          const response = await fetch('/user/profile/update-additional-info', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(formData)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Перенаправляем на ads service после успешного сохранения
+            window.location.href = '/ads/';
+          } else {
+            alert('Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'));
+          }
+        } catch (error) {
+          console.error('Ошибка:', error);
+          alert('Не удалось сохранить данные');
+        }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

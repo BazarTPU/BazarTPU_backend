@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Профиль</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/profile.css') }}">
+    <link rel="icon" href="{{ url_for('static', path='img/tpuLogo.png') }}" type="image/png">
     <script>
       function moveProfile(openDiv, buttonAcctive) {
         let listDivId = ['divInfo', 'divMessage', 'divMyProduct'];
@@ -37,28 +38,132 @@
         currentElement = document.getElementById(divIdOpen);
         currentElement.style.display = 'block';
       }
-
     </script>
 </head>
 <body>
-    <header class=" text-bg-white ">
-      <div class="container headerMain " >
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch('/user/profile/check', {
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      window.location.href = '/auth/login';
+    }
+  } catch (error) {
+    console.error('Auth check failed:', error);
+    window.location.href = '/auth/login';
+  }
+});
+</script>
+<script>
+  function openChangeDiv(divIdOpen, divIdClose) {
+    if (divIdOpen === 'infoChange' && divIdClose === 'infoStatic') {
+      document.getElementById(divIdClose).style.display = 'none';
+      document.getElementById(divIdOpen).style.display = 'block';
+    }
+    else if (divIdOpen === 'infoStatic' && divIdClose === 'infoChange') {
+      saveProfileChanges();
+    }
+  }
+
+  async function saveProfileChanges() {
+    const phoneInput = document.getElementById('phoneNumberField');
+    const telegramInput = document.getElementById('telegramField');
+    const dormitorySelect = document.getElementById('state');
+
+    const phoneNumber = phoneInput.value;
+    const telegramId = telegramInput.value;
+    const dormitory = dormitorySelect.value;
+
+    const phonePattern = /^7[0-9]{10}$/;
+    if (!phonePattern.test(phoneNumber)) {
+        document.getElementById('error-message-phone-change').style.display = 'block';
+        return;
+    } else {
+        document.getElementById('error-message-phone-change').style.display = 'none';
+    }
+
+    try {
+        const response = await fetch('/user/profile/update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                phone_number: phoneNumber,
+                telegram_id: telegramId,
+                dormitory_id: dormitory
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            document.querySelector('#infoStatic input[value="{{ user.phone }}"]').value = phoneNumber;
+            document.querySelector('#infoStatic input[value="{{ user.telegram_id }}"]').value = telegramId;
+            const dormitoryDisplay = document.querySelector('#infoStatic input[value="{{ user.dormitory_id }}"]');
+            if (dormitoryDisplay) {
+            dormitoryDisplay.value = result.user.dormitory_id || "";
+            }
+
+            const avatarPreview = document.getElementById('userAvatarPreview');
+            if (avatarPreview) {
+                document.getElementById('userAvatar').src = avatarPreview.src;
+            }
+
+            document.getElementById('infoChange').style.display = 'none';
+            document.getElementById('infoStatic').style.display = 'block';
+        } else {
+            alert('Ошибка сохранения: ' + (result.error || 'Неизвестная ошибка'));
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Не удалось сохранить изменения');
+    }
+}
+
+  // Функция выхода из системы
+  async function logout() {
+    if (!confirm('Вы уверены, что хотите выйти из системы?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        // Перенаправляем на страницу входа
+        window.location.href = '/auth/login';
+      } else {
+        alert('Ошибка при выходе из системы');
+      }
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+      // В случае ошибки все равно пытаемся перенаправить на страницу входа
+      window.location.href = '/auth/login';
+    }
+  }
+</script>
+    <header class=" text-bg-white " >
+        <div class="container headerMain " >
           <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-start ">
 
-
-            <a href="/ads/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
-                <img src="{{ url_for('static', path='image/tpuLogo.png') }}" alt="LOGO" width="70px">
+            <a href="/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+                <img src="{{ url_for('static', path='/img/tpuLogo.png') }}" alt="LOGO" width="70px">
                 <span class="mainName">Базар</span>
             </a>
 
             <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
-              <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px">
+              <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px; border-radius: 7px;">
             </form>
 
-            <!-- <img src="image/Lupa.webp" alt="" class="lupa" height="35px"> -->
-            <div class="" style="display: flex; justify-content: space-between;">
-              <a href="newProduct"><button class="buttonHeader">Разместить объявление</button></a>
-              <a href="profileInfo.html"><button class="buttonHeader">Профиль</button></a>
+            <div class="text-end ">
+              <a href="/ads/newProduct"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="/user/profile"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
         </div>
@@ -68,7 +173,6 @@
           <div class="row g-5">
 
             <div class="col-md-4 col-lg-3 sections" >
-
               <a href="#">
                 <button class="w-100 mb-2 buttonSection btnNoAcctive btnAcctive" id="btnInfo" type="button" onclick="moveProfile('divInfo', 'btnInfo')">
                     Информация
@@ -87,67 +191,77 @@
             </div>
 
             <div class="col-md-8 col-lg-9" id="divInfo">
-              <div>
-                <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" >
-              </div>
-              <div class="mb-3 row">
-                <label  class="col-sm-2 col-form-label " >Имя</label>
-                <div class="col-sm-10">
-                  <input type="input" class="areaInfo" readonly value="Иван">
-                </div>
-              </div>
-              <div class="mb-3 row">
-                <label  class="col-sm-2 col-form-label">Фамилия</label>
-                <div class="col-sm-10">
-                  <input type="input" class="areaInfo" readonly value="Иванов">
-                </div>
-              </div>
-              <div class="mb-3 row">
-                <label  class="col-sm-2 col-form-label">Email</label>
-                <div class="col-sm-10">
-                  <input type="input" class="areaInfo" readonly value="iiv1@tpu.ru">
-                </div>
-              </div>
-
-
               <div id="infoStatic" style="display: block;">
+                <div>
+                  <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" id="userAvatar">
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label " >Имя</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.first_name }}">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Фамилия</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.last_name }}">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label  class="col-sm-2 col-form-label">Email</label>
+                  <div class="col-sm-10">
+                    <input type="input" class="areaInfo" readonly value="{{ user.email }}">
+                  </div>
+                </div>
                 <div class="mb-3 row">
                   <label  class="col-sm-2 col-form-label">Телефон</label>
                   <div class="col-sm-10">
-                    <input type="input" class="areaInfo" readonly value="78999999999">
+                    <input type="input" class="areaInfo" readonly value="{{ user.phone }}">
                   </div>
                 </div>
                 <div class="mb-3 row">
                   <label  class="col-sm-2 col-form-label">TG</label>
                   <div class="col-sm-10">
-                    <input type="input" class="areaInfo" readonly value="@vanya">
+                    <input type="input" class="areaInfo" readonly value="{{ user.telegram_id }}">
                   </div>
                 </div>
                 <div class="mb-3 row">
                   <label  class="col-sm-2 col-form-label">Общежитие</label>
                   <div class="col-sm-10">
-                    <input type="input" class="areaInfo" readonly value="№14, Вершинина 39А">
+                    <input type="input" class="areaInfo" readonly value="{{ user.dormitory_id }}">
                   </div>
                 </div>
-                <a href="#" >
-                  <button class=" mb-2 buttonChange" onclick="openChangeDiv('infoChange', 'infoStatic')" type="button" style="margin-top: 10px; ">
-                      Изменить
-                  </button>
-                </a>
+                <div class="d-flex flex-column">
+                  <a href="#" >
+                    <button class="mb-2 buttonChange" onclick="openChangeDiv('infoChange', 'infoStatic')" type="button" style="margin-top: 10px;">
+                        Изменить
+                    </button>
+                  </a>
+                  <a href="#" >
+                    <button class="mb-2 buttonChange" onclick="logout()" type="button" style="margin-top: 10px; background-color: #de6464; border-color: #de6464;">
+                        Выйти
+                    </button>
+                  </a>
+                </div>
               </div>
 
               <div id="infoChange" style="display: none;">
+                <div>
+                  <input type="file" id="avatarUploadInput" accept="image/*" style="display: none;">
+                  <img src="{{ user.user_photo }}" class="img-thumbnail fotoProfile" alt="" id="userAvatarPreview" style="cursor: pointer;">
+                  <div id="avatarUploadStatus" style="display: none; color: green; margin-top: 5px;"></div>
+                </div>
                 <div class="mb-3 row">
                   <label  class="col-sm-2 col-form-label">Телефон</label>
                   <div class="col-sm-10">
-                    <input type="input" id="phoneNumberField" class="areaInfo areaInfoChange" value="78999999999">
+                    <input type="input" id="phoneNumberField" class="areaInfo areaInfoChange" value="{{ user.phone }}">
                     <span id="error-message-phone-change" class="errorMessage" style="display: none; color: red;"><small>Введите корректный номер телефона. Формат 7-999-999-99-99</small></span>
                   </div>
                 </div>
                 <div class="mb-3 row">
                   <label  class="col-sm-2 col-form-label">TG</label>
                   <div class="col-sm-10">
-                    <input type="input" class="areaInfo areaInfoChange" value="@vanya">
+                    <input type="input" id="telegramField" class="areaInfo areaInfoChange" value="{{ user.telegram_id }}">
                   </div>
                 </div>
                 <div class="mb-3 row">
@@ -155,11 +269,11 @@
                   <div class="col-sm-10">
                     <select class="form-select areaInfo areaInfoChange" id="state" required="">
                       <option value="">Выберите номер общежития</option>
-                      <option>Общежитие №1</option>
-                      <option>Общежитие №2</option>
-                      <option>Общежитие №3</option>
-                      <option>Общежитие №4</option>
-                      <option>Общежитие №5</option>
+                      {% for dormitory in user.dormitories %}
+                      <option value="{{ dormitory }}" {% if dormitory == user.dormitory_id %}selected{% endif %}>
+                        {{ dormitory }}
+                      </option>
+                      {% endfor %}
                     </select>
                   </div>
                 </div>
@@ -177,7 +291,7 @@
                 <div class="card mb-3" style="max-width: 100%; ">
                   <div class="row g-0">
                     <div class="col-md-3">
-                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                      <img src="{{ url_for('static', path='/img/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
                     </div>
                     <div class="col-md-7">
                       <div class="card-body">
@@ -187,117 +301,74 @@
                       </div>
                     </div>
                     <div class="col-md-2 changeAndRemoveDiv">
-                      <a href="" style="z-index: 2;"><button class="buttonRemoveChat" ><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></button></a>
+                      <a href="" style="z-index: 2;"><button class="buttonRemoveChat" ><img src="{{ url_for('static', path='/img/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></button></a>
                       <a href="/chat" class="linkChat" ></a>
                     </div>
                   </div>
                 </div>
-                <div class="card mb-3 margin-top-0" style="max-width: 100%;">
-                  <div class="row g-0">
-                    <div class="col-md-3">
-                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
-                    </div>
-                    <div class="col-md-7">
-                      <div class="card-body">
-                        <h5 class="card-title chatTextNameSaler">Имя продавца</h5>
-                        <p class="card-text chatTextNameProduct">Название</p>
-                        <p class="card-text chatTextPrice">Цена</p>
-                      </div>
-                    </div>
-                    <div class="col-md-2 changeAndRemoveDiv">
-                      <a href="" style="z-index: 2;"><button class="buttonRemoveChat" ><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></button></a>
-                      <a href="/chat" class="linkChat" ></a>
-                    </div>
-                  </div>
-                </div>
-                <div class="card mb-3 margin-top-0" style="max-width: 100%;">
-                  <div class="row g-0">
-                    <div class="col-md-3">
-                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
-                    </div>
-                    <div class="col-md-7">
-                      <div class="card-body">
-                        <h5 class="card-title chatTextNameSaler">Имя продавца</h5>
-                        <p class="card-text chatTextNameProduct">Название</p>
-                        <p class="card-text chatTextPrice">Цена</p>
-                      </div>
-                    </div>
-                    <div class="col-md-2 changeAndRemoveDiv">
-                      <a href="" style="z-index: 2;"><button class="buttonRemoveChat" ><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></button></a>
-                      <a href="/chat" class="linkChat" ></a>
-                    </div>
-                  </div>
-                </div>
-                <p style="margin-top: 100%;"></p>
               </div>
             </div>
 
+            <!-- Обновленный блок "Мои объявления" -->
             <div class="col-md-8 col-lg-9" id="divMyProduct" style="display: none;">
-
               <div class="row g-4 py-3 row-cols-1 row-cols-lg-12">
-                <div class="card mb-3" style="max-width: 100%; ">
+                {% if user.user_ads and user.user_ads|length > 0 %}
+                {% for ad in user.user_ads %}
+                <div class="card mb-3" style="max-width: 100%;" id="ad-{{ ad.id }}">
                   <div class="row g-0">
                     <div class="col-md-3">
-                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
+                      {% if ad.photos and ad.photos|length > 0 %}
+                      <img src="{{ ad.photos[0] }}" class="rounded-start" alt="Фото объявления" style="width: 90%; padding: 20px; padding-right: 0px; object-fit: cover; height: 150px;">
+                      {% else %}
+                      <img src="{{ url_for('static', path='/img/noLogoItem900.png') }}" class="rounded-start" alt="Нет фото" style="width: 90%; padding: 20px; padding-right: 0px;">
+                      {% endif %}
                     </div>
                     <div class="col-md-7">
                       <div class="card-body">
-                        <h5 class="card-title textProduct">Название</h5>
-                        <p class="card-text textProduct">Цена</p>
-                        <p class="card-text textProduct"><small class="text-muted">Просмотры: 2</small></p>
+                        <h5 class="card-title textProduct">
+                          <a href="/ads/products?id={{ ad.id }}" style="text-decoration: none; color: inherit;">
+                            {{ ad.title }}
+                          </a>
+                        </h5>
+                        <p class="card-text textProduct">{{ ad.price }} ₽</p>
+                        <p class="card-text textProduct">
+                          <small class="text-muted">
+                            {% if ad.description|length > 100 %}
+                            {{ ad.description[:100] }}...
+                            {% else %}
+                            {{ ad.description }}
+                            {% endif %}
+                          </small>
+                        </p>
                       </div>
                     </div>
-                    <div class="col-md-2 changeAndRemoveDiv" >
-                      <a href="/new-product"><img src="{{ url_for('static', path='/image/changeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
-                      <a href="#"><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
+                    <div class="col-md-2 changeAndRemoveDiv">
+                      <a href="/ads/edit/{{ ad.id }}">
+                        <img src="{{ url_for('static', path='/img/changeLogo.png') }}" alt="Редактировать" class="changeAndRemoveLogo">
+                      </a>
+                      <a href="#" onclick="deleteAd({{ ad.id }}); return false;">
+                        <img src="{{ url_for('static', path='/img/removeLogo.png') }}" alt="Удалить" class="changeAndRemoveLogo">
+                      </a>
                     </div>
                   </div>
                 </div>
-                <div class="card mb-3" style="max-width: 100%; ">
-                  <div class="row g-0">
-                    <div class="col-md-3">
-                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
-                    </div>
-                    <div class="col-md-7">
-                      <div class="card-body">
-                        <h5 class="card-title textProduct">Название</h5>
-                        <p class="card-text textProduct">Цена</p>
-                        <p class="card-text textProduct"><small class="text-muted">Просмотры: 2</small></p>
-                      </div>
-                    </div>
-                    <div class="col-md-2 changeAndRemoveDiv" >
-                      <a href="/new-product"><img src="{{ url_for('static', path='/image/changeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
-                      <a href="#"><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
-                    </div>
-                  </div>
+                {% endfor %}
+                {% else %}
+                <div class="text-center py-5">
+                  <h5>У вас пока нет объявлений</h5>
+                  <p class="text-muted">Создайте свое первое объявление</p>
+                  <a href="/ads/newProduct" class="btn buttonNewProduct"
+                  >Создать объявление</a>
                 </div>
-                <div class="card mb-3" style="max-width: 100%; ">
-                  <div class="row g-0">
-                    <div class="col-md-3">
-                      <img src="{{ url_for('static', path='/image/noLogoItem900.png') }}" class=" rounded-start" alt="" style="width: 90%; padding: 20px; padding-right: 0px;">
-                    </div>
-                    <div class="col-md-7">
-                      <div class="card-body">
-                        <h5 class="card-title textProduct">Название</h5>
-                        <p class="card-text textProduct">Цена</p>
-                        <p class="card-text textProduct"><small class="text-muted">Просмотры: 2</small></p>
-                      </div>
-                    </div>
-                    <div class="col-md-2 changeAndRemoveDiv" >
-                      <a href="/new-product"><img src="{{ url_for('static', path='/image/changeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
-                      <a href="#"><img src="{{ url_for('static', path='/image/removeLogo.png') }}" alt="" class="changeAndRemoveLogo"></a>
-                    </div>
-                  </div>
-                </div>
+                {% endif %}
                 <p style="margin-top: 100%;"></p>
               </div>
             </div>
-
         </div>
     </main>
     <script>
       document.getElementById("phoneNumberField").addEventListener("input", function() {
-        let phonePattern = /^7[0-9]{10}$/;
+        let phonePattern = /^(?:\+7|7|8)\d{10}$/;
         let phoneInput = document.getElementById("phoneNumberField");
         let error = document.getElementById("error-message-phone-change");
         if(phonePattern.test(phoneInput.value)) {
@@ -308,6 +379,108 @@
         }
       })
     </script>
+<script>
+  // Обработчик клика по аватару в режиме редактирования
+  document.getElementById('userAvatarPreview').addEventListener('click', function() {
+    document.getElementById('avatarUploadInput').click();
+  });
+
+  // Обработчик выбора файла
+  document.getElementById('avatarUploadInput').addEventListener('change', async function(e) {
+    if (e.target.files.length > 0) {
+      const file = e.target.files[0];
+
+      // Проверка типа файла
+      if (!file.type.match('image.*')) {
+        alert('Пожалуйста, выберите изображение');
+        return;
+      }
+
+      // Проверка размера файла (например, не более 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Размер файла не должен превышать 2MB');
+        return;
+      }
+
+      // Превью аватара
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        document.getElementById('userAvatarPreview').src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+
+      // Загрузка на сервер
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('/user/profile/upload-avatar', {
+          method: 'POST',
+          credentials: 'include',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          document.getElementById('userAvatar').src = result.file_path;
+        document.getElementById('userAvatarPreview').src = result.file_path;
+
+        document.getElementById('avatarUploadStatus').style.display = 'block';
+        } else {
+          alert('Ошибка загрузки: ' + (result.error || 'Неизвестная ошибка'));
+        }
+      } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Не удалось загрузить аватар');
+      }
+    }
+  });
+</script>
+<script>
+  async function deleteAd(adId) {
+    if (!confirm('Вы уверены, что хотите удалить это объявление?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/ads/${adId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.status === 204) {
+        // Успешное удаление - удаляем карточку из DOM
+        const adElement = document.getElementById(`ad-${adId}`);
+        if (adElement) {
+          adElement.remove();
+        }
+
+        // Проверяем, остались ли еще объявления
+        const adsContainer = document.getElementById('divMyProduct');
+        const ads = adsContainer.querySelectorAll('.card.mb-3');
+
+        if (ads.length === 0) {
+          // Если объявлений не осталось, показываем сообщение
+          adsContainer.innerHTML = `
+            <div class="text-center py-5">
+              <h5>У вас пока нет объявлений</h5>
+              <p class="text-muted">Создайте свое первое объявление</p>
+              <a href="/ads/newProduct" class="btn btn-success">Создать объявление</a>
+            </div>
+            <p style="margin-top: 100%;"></p>
+          `;
+        }
+      } else {
+        const error = await response.json();
+        alert(`Ошибка при удалении: ${error.detail || 'Неизвестная ошибка'}`);
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Не удалось удалить объявление');
+    }
+  }
+</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

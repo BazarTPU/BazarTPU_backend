@@ -1,5 +1,4 @@
 // // Динамическая подгрузка категорий на главной странице
-
 document.addEventListener('DOMContentLoaded', async function() {
     const categoriesRow = document.getElementById('qwe');
     if (!categoriesRow) return;
@@ -11,9 +10,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         categories.forEach(cat => {
             categoriesRow.innerHTML += `
             <div class="col">
-              <a href=""><button class="buttonProduct" style="height: 70px; width: 100%;"><span class="buttonCategories buttonProductText">${cat.name}</span></button></a>
-            </div>
+              <a href="/ads/foundByCategory/${cat.id}"> 
+              <button type="button" class="buttonProduct borderBlack" style="height: 70px; width: 100%; ">
+              <span class="buttonCategories buttonProductText">${cat.name}</span>
+              </button>
+              </a>
+             </div>  
             `;
+            console.log(categoriesRow);
         });
       }
     } catch (e) {
