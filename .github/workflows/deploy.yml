@@ -59,7 +59,7 @@ jobs:
         key_path: /home/runner/.ssh/deploy_key
         passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
         source: "docker-compose.yaml"
-        target: "/chipoh"
+        target: "chipoh"
         strip_components: 0
 
     - name: Deploy to Yandex Cloud
@@ -70,7 +70,7 @@ jobs:
         key_path: /home/runner/.ssh/deploy_key
         passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
         script: |
-          cd /chipoh
+          cd chipoh
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
           docker-compose pull
           docker-compose up -d 
