@@ -10,7 +10,7 @@ from user_service.api.user_router import user_router
 from fastapi.staticfiles import StaticFiles
 app = FastAPI(openapi_prefix="/auth")
 
-app.include_router(auth_router, prefix="/auth")
+app.include_router(auth_router)
 app.include_router(user_router, prefix="/user")
 
 app.add_middleware(AuthMiddleware)
