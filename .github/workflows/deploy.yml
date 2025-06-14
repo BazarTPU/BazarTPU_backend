@@ -29,30 +29,20 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build User Service
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./user_service/Dockerfile
-        push: false
-        tags: bazartpu_backend-user_service:latest
+      run: |
+        docker build -t chipoh/user_service:latest -f ./user_service/Dockerfile .
 
     - name: Build Ads Service
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./ads_service/Dockerfile
-        push: false
-        tags: bazartpu_backend-ads_service:latest
-
-    - name: Tag and Push User Service
       run: |
-        docker tag bazartpu_backend-user_service:latest chipoh/user_service
-        docker push chipoh/user_service
+        docker build -t chipoh/ads_service:latest -f ./ads_service/Dockerfile .
 
-    - name: Tag and Push Ads Service
+    - name: Push User Service
       run: |
-        docker tag bazartpu_backend-ads_service:latest chipoh/ads_service
-        docker push chipoh/ads_service
+        docker push chipoh/user_service:latest
+
+    - name: Push Ads Service
+      run: |
+        docker push chipoh/ads_service:latest
 
     - name: Deploy to Yandex Cloud
       uses: appleboy/ssh-action@master
@@ -61,7 +51,7 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /chipoh/to/project
+          cd /chipoh/
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
           docker-compose pull
           docker-compose up -d 
