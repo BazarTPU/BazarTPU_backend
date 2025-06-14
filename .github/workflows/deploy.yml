@@ -1,0 +1,67 @@
+name: Deploy to Yandex Cloud
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  USER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/user_service
+  ADS_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/ads_service
+  DOCKER_TAG: ${{ github.sha }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build User Service
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./user_service/Dockerfile
+        push: false
+        tags: bazartpu_backend-user_service:latest
+
+    - name: Build Ads Service
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./ads_service/Dockerfile
+        push: false
+        tags: bazartpu_backend-ads_service:latest
+
+    - name: Tag and Push User Service
+      run: |
+        docker tag bazartpu_backend-user_service:latest chipoh/user_service
+        docker push chipoh/user_service
+
+    - name: Tag and Push Ads Service
+      run: |
+        docker tag bazartpu_backend-ads_service:latest chipoh/ads_service
+        docker push chipoh/ads_service
+
+    - name: Deploy to Yandex Cloud
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /chipoh/to/project
+          echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
+          docker-compose pull
+          docker-compose up -d 
