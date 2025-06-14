@@ -51,6 +51,17 @@ jobs:
         chmod 600 /home/runner/.ssh/deploy_key
         ssh-keyscan -H ${{ secrets.SSH_HOST }} >> /home/runner/.ssh/known_hosts
 
+    - name: Copy docker-compose file
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key_path: /home/runner/.ssh/deploy_key
+        passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+        source: "docker-compose.yaml"
+        target: "/chipoh"
+        strip_components: 0
+
     - name: Deploy to Yandex Cloud
       uses: appleboy/ssh-action@master
       with:
@@ -59,7 +70,7 @@ jobs:
         key_path: /home/runner/.ssh/deploy_key
         passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
         script: |
-          cd /chipoh/
+          cd /chipoh
           echo "DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}" >> .env
           docker-compose pull
           docker-compose up -d 
