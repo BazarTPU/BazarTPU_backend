@@ -32,6 +32,12 @@ a {
     background: white;
     font-size: 19px;
 }
+
+.buttonHeader-span {
+    font-size: 19px;
+    color: black;
+}
+
 /* .buttonHeader:visited,
 .buttonHeader:active,
 .buttonHeader:focus {
