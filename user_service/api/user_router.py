@@ -1,7 +1,8 @@
 import os
+from typing import List
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, status, Request, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, Request, UploadFile, File, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from jose import JWTError, jwt
@@ -18,7 +19,7 @@ from user_service.db.models import UserPhoto, Dormitory, User
 from user_service.db.session import get_db
 from user_service.api.models import User_sc
 from user_service.api.actions.user import _get_user_by_id, _delete_user_by_id, _update_user_by_id, _create_new_user
-from user_service.db.dals import UserDAL
+from user_service.db.dals import UserDAL, DormitoryDAL
 
 user_router = APIRouter(tags=["User"])
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / "user_service/templates"))
@@ -457,3 +458,89 @@ async def get_user_ads_proxy(user_id: str, request: Request):
     except Exception as e:
         print(f"Unexpected error in get_user_ads_proxy: {str(e)}")
         return []
+
+
+# Эндпоинты для работы с общежитиями (Dormitory)
+
+@user_router.post("/dormitories/", response_model=Dormitory, tags=["Dormitories"])
+async def create_dormitory(
+        name: str = Form(...),
+        address: str = Form(...),
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Создание нового общежития
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        dormitory = await dormitory_dal.create_dormitory(
+            name=name,
+            address=address
+        )
+        return dormitory
+
+
+@user_router.get("/dormitories/", response_model=List[Dormitory], tags=["Dormitories"])
+async def get_all_dormitories(db: AsyncSession = Depends(get_db)):
+    """
+    Получение списка всех общежитий
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        dormitories = await dormitory_dal.get_all_dormitories()
+        return dormitories
+
+
+@user_router.get("/dormitories/{dormitory_id}", response_model=Dormitory, tags=["Dormitories"])
+async def get_dormitory_by_id(
+        dormitory_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Получение информации об общежитии по ID
+
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        dormitory = await dormitory_dal.get_dormitory_by_id(dormitory_id)
+        if not dormitory:
+            raise HTTPException(status_code=404, detail="Общежитие не найдено")
+        return dormitory
+
+
+@user_router.put("/dormitories/{dormitory_id}", response_model=Dormitory, tags=["Dormitories"])
+async def update_dormitory(
+        dormitory_id: int,
+        name: str = Form(None),
+        address: str = Form(None),
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Обновление информации об общежитии
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        updated_dormitory = await dormitory_dal.update_dormitory(
+            dormitory_id=dormitory_id,
+            name=name,
+            address=address
+        )
+        if not updated_dormitory:
+            raise HTTPException(status_code=404, detail="Общежитие не найдено")
+        return updated_dormitory
+
+
+@user_router.delete("/dormitories/{dormitory_id}", tags=["Dormitories"])
+async def delete_dormitory(
+        dormitory_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Удаление общежития
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        success = await dormitory_dal.delete_dormitory(dormitory_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Общежитие не найдено")
+        return {"message": "Общежитие успешно удалено"}
