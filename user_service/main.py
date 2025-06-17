@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 app = FastAPI(openapi_prefix="/auth")
 
 app.include_router(auth_router)
-app.include_router(user_router)
+app.include_router(user_router, prefix="/user")
 
 app.add_middleware(AuthMiddleware)
 
