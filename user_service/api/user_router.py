@@ -74,7 +74,7 @@ async def get_profile_page(
                     urls_to_try = [
                         # f"http://localhost:8001/ads/user/ads/{user_id}",
                         # f"http://ads-service:8001/ads/user/ads/{user_id}",
-                        f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
+                        f"http://51.250.43.104/ads/user/ads/{user_id}"
                     ]
 
                     for url in urls_to_try:
@@ -416,9 +416,9 @@ async def get_user_ads_proxy(user_id: str, request: Request):
 
             # Пробуем разные варианты URL для подключения к ads service
             urls_to_try = [
-                f"http://localhost:8001/ads/user/ads/{user_id}",
-                f"http://ads-service:8001/ads/user/ads/{user_id}",
-                f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
+                f"http://51.250.43.104/ads/user/ads/{user_id}",
+                f"http://51.250.43.104/ads/user/ads/{user_id}",
+                f"http://51.250.43.104/ads/user/ads/{user_id}"
             ]
 
             last_error = None
