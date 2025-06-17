@@ -56,7 +56,7 @@
   e.preventDefault();
 
   try {
-    const response = await fetch('http://127.0.0.1:8002/auth/token', {
+    const response = await fetch('/auth/token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -69,11 +69,11 @@
 
     if (response.ok) {
       if (data.redirect_url.includes("additional-info")) {
-        window.location.href = "http://127.0.0.1:8002" + data.redirect_url;
+        window.location.href = data.redirect_url;
       } else if (data.redirect_url.includes("/user/profile")) {
-        window.location.href = "http://127.0.0.1:8002" + data.redirect_url;
+        window.location.href = data.redirect_url;
       } else {
-        window.location.href = "http://127.0.0.1:8001/ads/";
+        window.location.href = "/ads/";
       }
     } else {
       alert(`Ошибка авторизации: ${data.detail || 'Проверьте email и пароль.'}`);

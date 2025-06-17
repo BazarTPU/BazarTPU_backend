@@ -13,18 +13,18 @@
     <header class=" text-bg-white ">
       <div class="container headerMain " >
           <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-start ">
-            <a href="http://127.0.0.1:8001/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+            <a href="/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
                 <img src="{{ url_for('static', path='image/tpuLogo.png') }}" alt="LOGO" width="70px">
                 <span class="mainName">Базар</span>
             </a>
 
-            <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
+            <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search" id="searchForm">
               <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px">
             </form>
 
             <div class="" style="display: flex; justify-content: space-between;">
-              <a href="http://127.0.0.1:8001/ads/newProduct"><button class="buttonHeader">Разместить объявление</button></a>
-              <a href="http://127.0.0.1:8002/user/profile"><button class="buttonHeader">Профиль</button></a>
+              <a href="/ads/newProduct"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="/user/profile"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
         </div>
@@ -66,7 +66,7 @@
                             {% if ad.photos %}
                               {% for photo in ad.photos %}
                               <div class="existing-photo" style="position: relative; display: inline-block;">
-                                <img src="http://127.0.0.1:8001{{ photo }}" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px;">
+                                <img src="http://51.250.43.104{{ photo }}" style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #ddd; border-radius: 5px;">
                                 <button type="button" class="btn btn-sm btn-danger remove-existing-photo"
                                         data-photo="{{ photo }}"
                                         style="position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; padding: 0; line-height: 20px; text-align: center;">×</button>
@@ -520,7 +520,7 @@
                     const result = await response.json();
                     if (result.success) {
                         alert('Объявление успешно обновлено!');
-                        window.location.href = 'http://127.0.0.1:8002/user/profile';
+                        window.location.href = '/user/profile';
                     }
                 } else {
                     const error = await response.json();

@@ -152,18 +152,18 @@
         <div class="container headerMain " >
           <div class="d-flex flex-wrap align-items-center justify-content-start justify-content-lg-start ">
 
-            <a href="http://127.0.0.1:8001/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
+            <a href="/ads" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none ">
                 <img src="{{ url_for('static', path='/img/tpuLogo.png') }}" alt="LOGO" width="70px">
                 <span class="mainName">Базар</span>
             </a>
 
-            <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search">
+            <form class="col-12 col-lg-3 mb-3 mb-lg-0 me-lg-3 inputMainLocation" role="search" id="searchForm">
               <input type="search" class="inputMain" placeholder="Поиск" style="padding-right: 7px; border-radius: 7px;">
             </form>
 
             <div class="text-end ">
-              <a href="http://127.0.0.1:8001/ads/newProduct"><button class="buttonHeader">Разместить объявление</button></a>
-              <a href="http://127.0.0.1:8002/user/profile"><button class="buttonHeader">Профиль</button></a>
+              <a href="/ads/newProduct"><button class="buttonHeader">Разместить объявление</button></a>
+              <a href="/user/profile"><button class="buttonHeader">Профиль</button></a>
             </div>
           </div>
         </div>
@@ -318,7 +318,7 @@
                   <div class="row g-0">
                     <div class="col-md-3">
                       {% if ad.photos and ad.photos|length > 0 %}
-                      <img src="http://127.0.0.1:8001{{ ad.photos[0] }}" class="rounded-start" alt="Фото объявления" style="width: 90%; padding: 20px; padding-right: 0px; object-fit: cover; height: 150px;">
+                      <img src="{{ ad.photos[0] }}" class="rounded-start" alt="Фото объявления" style="width: 90%; padding: 20px; padding-right: 0px; object-fit: cover; height: 150px;">
                       {% else %}
                       <img src="{{ url_for('static', path='/img/noLogoItem900.png') }}" class="rounded-start" alt="Нет фото" style="width: 90%; padding: 20px; padding-right: 0px;">
                       {% endif %}
@@ -326,7 +326,7 @@
                     <div class="col-md-7">
                       <div class="card-body">
                         <h5 class="card-title textProduct">
-                          <a href="http://127.0.0.1:8001/ads/products?id={{ ad.id }}" style="text-decoration: none; color: inherit;">
+                          <a href="/ads/products?id={{ ad.id }}" style="text-decoration: none; color: inherit;">
                             {{ ad.title }}
                           </a>
                         </h5>
@@ -343,7 +343,7 @@
                       </div>
                     </div>
                     <div class="col-md-2 changeAndRemoveDiv">
-                      <a href="http://127.0.0.1:8001/ads/edit/{{ ad.id }}">
+                      <a href="/ads/edit/{{ ad.id }}">
                         <img src="{{ url_for('static', path='/img/changeLogo.png') }}" alt="Редактировать" class="changeAndRemoveLogo">
                       </a>
                       <a href="#" onclick="deleteAd({{ ad.id }}); return false;">
@@ -357,7 +357,7 @@
                 <div class="text-center py-5">
                   <h5>У вас пока нет объявлений</h5>
                   <p class="text-muted">Создайте свое первое объявление</p>
-                  <a href="http://127.0.0.1:8001/ads/newProduct" class="btn buttonNewProduct"
+                  <a href="/ads/newProduct" class="btn buttonNewProduct"
                   >Создать объявление</a>
                 </div>
                 {% endif %}
@@ -444,7 +444,7 @@
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8001/ads/${adId}`, {
+      const response = await fetch(`/ads/${adId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -466,7 +466,7 @@
             <div class="text-center py-5">
               <h5>У вас пока нет объявлений</h5>
               <p class="text-muted">Создайте свое первое объявление</p>
-              <a href="http://127.0.0.1:8001/ads/newProduct" class="btn btn-success">Создать объявление</a>
+              <a href="/ads/newProduct" class="btn btn-success">Создать объявление</a>
             </div>
             <p style="margin-top: 100%;"></p>
           `;

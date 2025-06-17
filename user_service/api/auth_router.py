@@ -16,7 +16,7 @@ from user_service.db.models import User, Dormitory
 from user_service.api.actions.auth import authenticate_user, get_user_from_token
 
 
-auth_router = APIRouter(prefix="/auth", tags=["Auth"])
+auth_router = APIRouter(tags=["Auth"])
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / "user_service/templates"))
 
 
@@ -54,7 +54,7 @@ async def login_for_access_token(
         return {"access_token": access_token, "token_type": "bearer",
                 "redirect_url": "/auth/additional-info", "dormitories": dormitory_names}
 
-    return {"access_token": access_token, "token_type": "bearer", "redirect_url": "http://127.0.0.1:8001/ads/"}
+    return {"access_token": access_token, "token_type": "bearer", "redirect_url": "/ads"}
 
 @auth_router.get("/test_token")
 async def test_jwt_token(current_user: User = Depends(get_user_from_token)):
