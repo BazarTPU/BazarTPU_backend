@@ -229,8 +229,7 @@ async def proxy_user_profile(user_id: str, request: Request):
 
             # Пробуем разные варианты URL для подключения к user service
             urls_to_try = [
-                f"http://127.0.0.1:8002/user/profile/json/{user_id}",
-                f"http://user-service:8002/user/profile/json/{user_id}",  # Docker compose имя
+                f"http://51.250.43.104/user/profile/json/{user_id}",
             ]
 
             last_error = None

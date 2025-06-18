@@ -10,3 +10,17 @@ class User_sc(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class DormitoryCreate(BaseModel):
+    name: str
+    address: str
+
+
+class DormitoryResponse(BaseModel):
+    id: int
+    name: str
+    address: str
+
+    class Config:
+        from_attributes = True

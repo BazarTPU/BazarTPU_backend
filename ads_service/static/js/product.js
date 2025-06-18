@@ -57,8 +57,10 @@ photos.forEach((photo, idx) => {
 // Функция для загрузки данных пользователя
 async function loadUserData(userId) {
     try {
+
         // Use the proxy endpoint from ads service
         let userRes = await fetch(`/ads/profile/json/${userId}`);
+
 
         if (userRes.ok) {
             const userData = await userRes.json();
@@ -121,7 +123,7 @@ function setUserPhoto(userPhotoElement, userPhotoPath) {
         userPhotoElement.onerror = function() {
             console.error('Ошибка загрузки дефолтного аватара');
             // Попробуем альтернативный путь для дефолтного изображения
-            this.src = 'http://localhost:8002/static/img/noLogoItem900.png';
+            this.src = 'http://51.250.43.104/static/img/noLogoItem900.png';
             this.onerror = null; // Убираем обработчик, чтобы избежать бесконечного цикла
         };
         return;
@@ -152,7 +154,7 @@ function setUserPhoto(userPhotoElement, userPhotoPath) {
         if (!photoSrc.includes('noLogoItem900')) {
             // Попробуем прямой порт микросервиса (например, 8080)
             const fileName = userPhotoPath.split('/').pop();
-            const alternativeUrl = `http://localhost:8002/static/uploads/avatars/${fileName}`;
+            const alternativeUrl = `http://51.250.43.104/static/uploads/avatars/${fileName}`;
 
             if (this.src !== alternativeUrl) {
                 this.src = alternativeUrl;
@@ -167,7 +169,7 @@ function setUserPhoto(userPhotoElement, userPhotoPath) {
 
         // Последняя попытка для дефолтного изображения
         this.onerror = function() {
-            this.src = 'http://localhost:8002/static/img/noLogoItem900.png';
+            this.src = 'http://51.250.43.104/static/img/noLogoItem900.png';
             this.onerror = null; // Убираем обработчик
         };
     };
