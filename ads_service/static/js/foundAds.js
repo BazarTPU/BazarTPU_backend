@@ -91,6 +91,19 @@ document.addEventListener('DOMContentLoaded', function() {
     updateHeading(searchTerm);
     fetchAndDisplayAds(searchTerm);
 
+    // Обработка ввода в поле поиска
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            searchTerm = e.target.value.trim();
+            // Обновляем URL в адресной строке без перезагрузки
+            const newUrl = `${window.location.pathname}?q=${encodeURIComponent(searchTerm)}`;
+            window.history.replaceState({}, '', newUrl);
+
+            updateHeading(searchTerm);
+            fetchAndDisplayAds(searchTerm);
+        });
+    }
+
     // Перехватываем сабмит формы, чтобы делать новый поиск без перезагрузки
     if (searchForm) {
       searchForm.addEventListener('submit', function(e) {
