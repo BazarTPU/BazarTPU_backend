@@ -57,8 +57,8 @@ photos.forEach((photo, idx) => {
 // Функция для загрузки данных пользователя
 async function loadUserData(userId) {
     try {
-        // Use the full URL to the user service
-        let userRes = await fetch(`http://localhost:8002/user/profile/json/${userId}`);
+        // Use the proxy endpoint from ads service
+        let userRes = await fetch(`/ads/profile/json/${userId}`);
 
         if (userRes.ok) {
             const userData = await userRes.json();
