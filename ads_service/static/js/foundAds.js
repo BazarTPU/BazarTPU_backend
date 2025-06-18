@@ -22,10 +22,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function fetchAndDisplayAds(term = '') {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
-            let apiUrl = '/ads/search_json';
-            if (term) {
-                apiUrl += `?q=${encodeURIComponent(term)}`;
+            if (!term.trim()) {
+                allProductContainer.innerHTML = '<p class="text-center">Введите поисковый запрос.</p>';
+                return;
             }
+
+            let apiUrl = '/ads/search_json';
+            apiUrl += `?q=${encodeURIComponent(term)}`;
 
             console.log(`Fetching from: ${apiUrl}`);
             fetch(apiUrl)
