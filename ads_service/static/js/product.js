@@ -88,6 +88,12 @@ async function loadUserData(userId) {
                 emailTgLabels[1].textContent = contacts.length > 0 ? contacts.join(' / ') : 'Контакты не указаны';
             }
 
+            // Обновляем информацию об общежитии
+            const addressDivs = document.querySelectorAll('.col-12 > div > span');
+            if (addressDivs.length > 1) {
+                addressDivs[1].textContent = userData.dormitory ? `Общежитие №${userData.dormitory}` : '';
+            }
+
             // Фото пользователя
             if (userPhoto) {
                 setUserPhoto(userPhoto, userData.user_photo);
