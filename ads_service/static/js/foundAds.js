@@ -22,13 +22,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function fetchAndDisplayAds(term = '') {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
-            if (!term.trim()) {
-                allProductContainer.innerHTML = '<p class="text-center">Введите поисковый запрос.</p>';
-                return;
-            }
-
             let apiUrl = '/ads/search_json';
-            apiUrl += `?q=${encodeURIComponent(term)}`;
+            if (term) {
+                apiUrl += `?q=${encodeURIComponent(term)}`;
+            }
 
             console.log(`Fetching from: ${apiUrl}`);
             fetch(apiUrl)
@@ -90,19 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Первоначальный рендер при загрузке страницы
     updateHeading(searchTerm);
     fetchAndDisplayAds(searchTerm);
-
-    // Обработка ввода в поле поиска
-    if (searchInput) {
-        searchInput.addEventListener('input', function(e) {
-            searchTerm = e.target.value.trim();
-            // Обновляем URL в адресной строке без перезагрузки
-            const newUrl = `${window.location.pathname}?q=${encodeURIComponent(searchTerm)}`;
-            window.history.replaceState({}, '', newUrl);
-
-            updateHeading(searchTerm);
-            fetchAndDisplayAds(searchTerm);
-        });
-    }
 
     // Перехватываем сабмит формы, чтобы делать новый поиск без перезагрузки
     if (searchForm) {
