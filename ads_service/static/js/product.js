@@ -57,8 +57,10 @@ photos.forEach((photo, idx) => {
 // Функция для загрузки данных пользователя
 async function loadUserData(userId) {
     try {
-        // Use the full URL to the user service
-        let userRes = await fetch(`http://51.250.43.104/user/profile/json/${userId}`);
+
+        // Use the proxy endpoint from ads service
+        let userRes = await fetch(`/ads/profile/json/${userId}`);
+
 
         if (userRes.ok) {
             const userData = await userRes.json();
@@ -86,6 +88,12 @@ async function loadUserData(userId) {
                 if (userData.phone) contacts.push(userData.phone);
 
                 emailTgLabels[1].textContent = contacts.length > 0 ? contacts.join(' / ') : 'Контакты не указаны';
+            }
+
+            // Обновляем информацию об общежитии
+            const addressDivs = document.querySelectorAll('.col-12 > div > span');
+            if (addressDivs.length > 1) {
+                addressDivs[1].textContent = userData.dormitory ? `Общежитие №${userData.dormitory}` : '';
             }
 
             // Фото пользователя
