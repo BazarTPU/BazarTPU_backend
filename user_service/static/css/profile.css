@@ -150,7 +150,7 @@
     border-radius: 20px;
     height: 40px;
     width: 35%;
-    min-width: 181px;
+    /* min-width: 181px; */
     transition: all 350ms ease;
 }
 
