@@ -93,10 +93,10 @@ class DormitoryDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def create_dormitory(self, name: str, address: str) -> Dormitory:
+    async def create_dormitory(self, name: str, adress: str) -> Dormitory:
         new_dormitory = Dormitory(
             name=name,
-            address=address
+            adress=adress
         )
         self.db_session.add(new_dormitory)
         await self.db_session.flush()
@@ -116,7 +116,7 @@ class DormitoryDAL:
             self,
             dormitory_id: int,
             name: Optional[str] = None,
-            address: Optional[str] = None
+            adress: Optional[str] = None
     ) -> Optional[Dormitory]:
         query = select(Dormitory).where(Dormitory.id == dormitory_id)
         result = await self.db_session.execute(query)
@@ -125,8 +125,8 @@ class DormitoryDAL:
         if dormitory:
             if name is not None:
                 dormitory.name = name
-            if address is not None:
-                dormitory.address = address
+            if adress is not None:
+                dormitory.adress = adress
             await self.db_session.flush()
 
         return dormitory

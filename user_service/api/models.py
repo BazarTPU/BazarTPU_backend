@@ -11,16 +11,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-
-class DormitoryCreate(BaseModel):
+class Dormitory_sc(BaseModel):
+    id: Optional[int] = None
     name: str
-    address: str
-
-
-class DormitoryResponse(BaseModel):
-    id: int
-    name: str
-    address: str
-
-    class Config:
-        from_attributes = True
+    adress: str
