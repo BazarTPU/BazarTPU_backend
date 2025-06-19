@@ -138,7 +138,7 @@ function setUserPhoto(userPhotoElement, userPhotoPath) {
         photoSrc = photoSrc;
     } else {
         // Если только имя файла, добавляем полный путь
-        photoSrc = `/user_service/static/uploads/avatars/${photoSrc}`;
+        photoSrc = `/user_service/media/avatars/${userPhotoPath}`;
     }
 
     userPhotoElement.src = photoSrc;
