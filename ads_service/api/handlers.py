@@ -62,13 +62,13 @@ async def create_new_ad(
     photo_paths = []
     if photos:
         import os
-        upload_dir = "ads_service/static/uploads"
+        upload_dir = "ads_service/media"
         os.makedirs(upload_dir, exist_ok=True)
         for photo in photos:
             file_location = os.path.join(upload_dir, photo.filename)
             with open(file_location, "wb") as f:
                 f.write(await photo.read())
-            photo_paths.append(f"/ads/static/uploads/{photo.filename}")
+            photo_paths.append(f"/ads/media/{photo.filename}")
 
     # Собираем данные для модели
     ad_data = Ads_sc(
@@ -381,7 +381,7 @@ async def update_user_ad(
     # Добавляем новые фото
     if photos:
         import os
-        upload_dir = "ads_service/static/uploads"
+        upload_dir = "ads_service/media"
         os.makedirs(upload_dir, exist_ok=True)
 
         for photo in photos:
@@ -401,7 +401,7 @@ async def update_user_ad(
                     if content:
                         with open(file_location, "wb") as f:
                             f.write(content)
-                        photo_paths.append(f"/ads/static/uploads/{unique_filename}")
+                        photo_paths.append(f"/ads/media/{unique_filename}")
                 except Exception as e:
                     print(f"Error processing photo {photo.filename}: {e}")
                     # Продолжаем обработку других фотографий

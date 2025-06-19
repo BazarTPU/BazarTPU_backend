@@ -24,7 +24,7 @@ user_router = APIRouter(tags=["User"])
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / "user_service/templates"))
 
 BASE_DIR = Path(__file__).parent.parent.parent  # Путь к корню проекта
-AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/static/uploads/avatars"
+AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/media"
 os.makedirs(AVATAR_UPLOAD_DIR, exist_ok=True)  # Создаем папку, если её нет
 
 
@@ -235,7 +235,7 @@ async def upload_avatar(
         # Генерируем уникальное имя файла
         filename = f"{uuid4()}{file_ext}"
         absolute_path = AVATAR_UPLOAD_DIR / filename  # Полный путь к файлу
-        relative_path = f"/static/uploads/avatars/{filename}"  # Путь для URL
+        relative_path = f"/media/avatars/{filename}"  # Путь для URL
 
         # Сохраняем файл
         contents = await file.read()
