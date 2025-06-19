@@ -10,3 +10,8 @@ class User_sc(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class Dormitory_sc(BaseModel):
+    id: Optional[int] = None
+    name: str
+    adress: str
