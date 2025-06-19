@@ -73,10 +73,10 @@ async def get_profile_page(
                 print(f"Trying to fetch ads for user_id: {user_id}")
                 async with httpx.AsyncClient() as client:
                     urls_to_try = [
-                        f"http://localhost:8001/ads/user/ads/{user_id}",
-                        f"http://ads-service:8001/ads/user/ads/{user_id}",
-                        f"http://ads_service:8001/ads/user/ads/{user_id}",
-                        f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
+                        f"http://localhost:8001/ads/{user_id}",
+                        f"http://ads-service:8001/ads/{user_id}",
+                        f"http://ads_service:8001/ads/{user_id}",
+                        f"http://127.0.0.1:8001/ads/{user_id}"
                     ]
 
                     for url in urls_to_try:
