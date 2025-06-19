@@ -47,6 +47,8 @@ services:
     depends_on:
       db2:
         condition: service_healthy
+    volumes:
+      - ./media/user_avatars:/app/user_service/media/avatars
 
   ads_service:
     env_file:
@@ -62,6 +64,8 @@ services:
     depends_on:
       db1:
         condition: service_healthy
+    volumes:
+      - ./media/ads_uploads:/app/ads_service/media
 
 volumes:
   ads_postgres_data:

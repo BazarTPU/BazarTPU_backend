@@ -1,6 +1,6 @@
 // Динамическая подгрузка информации об объявлении на странице product.html
 
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     // Получаем id объявления из query-параметра
     const params = new URLSearchParams(window.location.search);
     const adId = params.get('id');
@@ -29,16 +29,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.getElementById('currentPhoto').src = photos[0];
             // Миниатюры
             let blockPhotos = document.getElementById('blockPhotos');
-photos.forEach((photo, idx) => {
+            photos.forEach((photo, idx) => {
                 // const thumb = document.getElementById('currentPhoto' + idx);
                 // if (thumb) thumb.src = photo;
-                let button =``;
+                let button = ``;
                 button = `
                     <button class="allPhotos" onclick="clickPhoto(${idx})" type="button" style="display: inline-block; width: 100px; height: 100px;">
                         <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 3px;">
                     </button>
                 `;
-                if(idx == 0) {
+                if (idx == 0) {
                     button = `
                         <button class="allPhotos" onclick="clickPhoto(${idx})" type="button" style="display: inline-block; width: 100px; height: 100px;">
                             <img src="${photo}" id="currentPhoto${idx}" alt="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 3px; border: 3px solid rgb(40,190,70);">
@@ -110,66 +110,50 @@ async function loadUserData(userId) {
 }
 
 // Функция для установки фото пользователя с обработкой дефолтного изображения
+// Функция для установки фото пользователя с обработкой дефолтного изображения
 function setUserPhoto(userPhotoElement, userPhotoPath) {
-    // Если у пользователя нет фото или путь пустой, устанавливаем дефолтное изображение
-    if (!userPhotoPath || userPhotoPath.trim() === '' || userPhotoPath === '/static/img/noLogoItem900.png') {
-        // Дефолтное изображение из другого микросервиса
+    // Если у пользователя нет фото, устанавливаем дефолтное изображение
+    if (!userPhotoPath || userPhotoPath.trim() === '' || userPhotoPath.includes('noLogoItem900.png')) {
+        // Дефолтное изображение из сервиса пользователей
         userPhotoElement.src = '/user_service/static/img/noLogoItem900.png';
         userPhotoElement.alt = 'Аватар по умолчанию';
-
-        // Обработка ошибки загрузки дефолтного изображения
-        userPhotoElement.onerror = function() {
-            console.error('Ошибка загрузки дефолтного аватара');
-            // Попробуем альтернативный путь для дефолтного изображения
+        userPhotoElement.onerror = function () {
+            // Резервный путь при ошибке
             this.src = 'http://localhost:8002/static/img/noLogoItem900.png';
-            this.onerror = null; // Убираем обработчик, чтобы избежать бесконечного цикла
+            this.onerror = null;
         };
         return;
     }
 
-    let photoSrc = userPhotoPath;
+    let finalSrc = userPhotoPath;
 
-    // Варианты обработки пути к аватару
-    if (photoSrc.startsWith('/static/')) {
-        // Заменяем /static/ на путь к микросервису пользователей
-        photoSrc = photoSrc.replace('/static/', '/user_service/static/');
-    } else if (photoSrc.startsWith('http')) {
-        // Если уже полный URL, оставляем как есть
-        photoSrc = photoSrc;
-    } else {
-        // Если только имя файла, добавляем полный путь
-        photoSrc = `/user_service/static/uploads/avatars/${photoSrc}`;
+    // Пути, начинающиеся с /media/ (например, /media/avatars/...), уже являются
+    // правильными корневыми путями, которые обрабатывает Nginx.
+    // Мы не должны их изменять.
+    if (finalSrc.startsWith('/media/')) {
+        // Оставляем как есть, например: /media/avatars/some-uuid.png
     }
+        // Для статических путей из user_service, которые бэкенд может вернуть как /static/...,
+    // нам нужно добавить префикс, чтобы Nginx правильно направил запрос.
+    else if (finalSrc.startsWith('/static/')) {
+        finalSrc = '/user_service' + finalSrc;
+    }
+    // Если это полный URL, оставляем как есть.
+    else if (finalSrc.startsWith('http')) {
+        // Оставляем как есть
+    }
+    // Этот блок был основной причиной ошибки, теперь он не нужен для /media/ путей.
 
-    userPhotoElement.src = photoSrc;
+    userPhotoElement.src = finalSrc;
     userPhotoElement.alt = 'Фото продавца';
 
-    // Добавляем обработку ошибки загрузки изображения
-    userPhotoElement.onerror = function() {
-        console.log(`Ошибка загрузки аватара: ${photoSrc}`);
-
-        // Если это не дефолтное изображение, попробуем альтернативные пути
-        if (!photoSrc.includes('noLogoItem900')) {
-            // Попробуем прямой порт микросервиса (например, 8080)
-            const fileName = userPhotoPath.split('/').pop();
-            const alternativeUrl = `http://localhost:8002/static/uploads/avatars/${fileName}`;
-
-            if (this.src !== alternativeUrl) {
-                this.src = alternativeUrl;
-                return;
-            }
-        }
-
-        // Если все попытки не удались, устанавливаем дефолтное изображение
-        console.log('Устанавливаем дефолтное изображение после неудачных попыток');
+    // Обработка ошибки загрузки основного фото
+    userPhotoElement.onerror = function () {
+        console.error(`Ошибка загрузки аватара по основному пути: ${this.src}`);
+        // В случае ошибки показываем дефолтное изображение
         this.src = '/user_service/static/img/noLogoItem900.png';
         this.alt = 'Аватар по умолчанию';
-
-        // Последняя попытка для дефолтного изображения
-        this.onerror = function() {
-            this.src = 'http://localhost:8002/static/img/noLogoItem900.png';
-            this.onerror = null; // Убираем обработчик
-        };
+        this.onerror = null; // Убираем обработчик, чтобы избежать бесконечного цикла
     };
 }
 

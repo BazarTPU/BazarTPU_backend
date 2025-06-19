@@ -1,7 +1,8 @@
 import os
+from typing import List
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, status, Request, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, Request, UploadFile, File, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from jose import JWTError, jwt
@@ -16,15 +17,15 @@ from starlette.responses import RedirectResponse, JSONResponse
 from user_service import templates, settings
 from user_service.db.models import UserPhoto, Dormitory, User
 from user_service.db.session import get_db
-from user_service.api.models import User_sc
+from user_service.api.models import User_sc, Dormitory_sc
 from user_service.api.actions.user import _get_user_by_id, _delete_user_by_id, _update_user_by_id, _create_new_user
-from user_service.db.dals import UserDAL
+from user_service.db.dals import UserDAL, DormitoryDAL
 
 user_router = APIRouter(tags=["User"])
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / "user_service/templates"))
 
 BASE_DIR = Path(__file__).parent.parent.parent  # Путь к корню проекта
-AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/static/uploads/avatars"
+AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/media/avatars"
 os.makedirs(AVATAR_UPLOAD_DIR, exist_ok=True)  # Создаем папку, если её нет
 
 
@@ -72,9 +73,10 @@ async def get_profile_page(
                 print(f"Trying to fetch ads for user_id: {user_id}")
                 async with httpx.AsyncClient() as client:
                     urls_to_try = [
-                        # f"http://localhost:8001/ads/user/ads/{user_id}",
-                        # f"http://ads-service:8001/ads/user/ads/{user_id}",
-                        f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
+                        f"http://localhost:8001/ads/{user_id}",
+                        f"http://ads-service:8001/ads/{user_id}",
+                        f"http://ads_service:8001/ads/{user_id}",
+                        f"http://127.0.0.1:8001/ads/{user_id}"
                     ]
 
                     for url in urls_to_try:
@@ -235,7 +237,7 @@ async def upload_avatar(
         # Генерируем уникальное имя файла
         filename = f"{uuid4()}{file_ext}"
         absolute_path = AVATAR_UPLOAD_DIR / filename  # Полный путь к файлу
-        relative_path = f"/static/uploads/avatars/{filename}"  # Путь для URL
+        relative_path = f"/media/avatars/{filename}"  # Путь для URL
 
         # Сохраняем файл
         contents = await file.read()
@@ -418,6 +420,7 @@ async def get_user_ads_proxy(user_id: str, request: Request):
             urls_to_try = [
                 f"http://localhost:8001/ads/user/ads/{user_id}",
                 f"http://ads-service:8001/ads/user/ads/{user_id}",
+                f"http://ads_service:8001/ads/user/ads/{user_id}",
                 f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
             ]
 
@@ -457,3 +460,85 @@ async def get_user_ads_proxy(user_id: str, request: Request):
     except Exception as e:
         print(f"Unexpected error in get_user_ads_proxy: {str(e)}")
         return []
+
+
+# Эндпоинты для работы с общежитиями (Dormitory)
+@user_router.post("/dormitories/", response_model=Dormitory_sc, tags=["Dormitories"])
+async def create_dormitory(
+        dormitory: Dormitory_sc,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Создание нового общежития
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        new_dormitory = await dormitory_dal.create_dormitory(
+            name=dormitory.name,
+            adress=dormitory.adress
+        )
+        await db.commit()
+        return new_dormitory
+
+@user_router.get("/dormitories/", response_model=List[Dormitory_sc], tags=["Dormitories"])
+async def get_all_dormitories(db: AsyncSession = Depends(get_db)):
+    """
+    Получение списка всех общежитий
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        dormitories = await dormitory_dal.get_all_dormitories()
+        return dormitories
+
+@user_router.get("/dormitories/{dormitory_id}", response_model=Dormitory_sc, tags=["Dormitories"])
+async def get_dormitory_by_id(
+        dormitory_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Получение информации об общежитии по ID
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        dormitory = await dormitory_dal.get_dormitory_by_id(dormitory_id)
+        if not dormitory:
+            raise HTTPException(status_code=404, detail="Общежитие не найдено")
+        return dormitory
+
+@user_router.put("/dormitories/{dormitory_id}", response_model=Dormitory_sc, tags=["Dormitories"])
+async def update_dormitory(
+        dormitory_id: int,
+        dormitory: Dormitory_sc,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Обновление информации об общежитии
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        updated_dormitory = await dormitory_dal.update_dormitory(
+            dormitory_id=dormitory_id,
+            name=dormitory.name,
+            adress=dormitory.adress
+        )
+        if not updated_dormitory:
+            raise HTTPException(status_code=404, detail="Общежитие не найдено")
+        await db.commit()
+        return updated_dormitory
+
+@user_router.delete("/dormitories/{dormitory_id}", tags=["Dormitories"])
+async def delete_dormitory(
+        dormitory_id: int,
+        db: AsyncSession = Depends(get_db)
+):
+    """
+    Удаление общежития
+    """
+    async with db.begin():
+        dormitory_dal = DormitoryDAL(db)
+        success = await dormitory_dal.delete_dormitory(dormitory_id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Общежитие не найдено")
+        await db.commit()
+        return {"message": "Общежитие успешно удалено"}
+
