@@ -44,7 +44,7 @@ async def login_for_access_token(
         samesite="lax"
     )
 
-    if not user.phone_number or not user.dormitory_id:
+    if not user.phone_number:
         async with db.begin():
             stmt = select(Dormitory).order_by(Dormitory.name)
             result = await db.execute(stmt)
