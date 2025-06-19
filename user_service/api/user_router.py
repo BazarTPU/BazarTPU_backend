@@ -24,7 +24,7 @@ user_router = APIRouter(tags=["User"])
 templates = Jinja2Templates(directory=str(Path(__file__).parent.parent.parent / "user_service/templates"))
 
 BASE_DIR = Path(__file__).parent.parent.parent  # Путь к корню проекта
-AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/media"
+AVATAR_UPLOAD_DIR = BASE_DIR / "user_service/media/avatars"
 os.makedirs(AVATAR_UPLOAD_DIR, exist_ok=True)  # Создаем папку, если её нет
 
 
