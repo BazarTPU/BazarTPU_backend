@@ -68,7 +68,7 @@ async def create_new_ad(
             file_location = os.path.join(upload_dir, photo.filename)
             with open(file_location, "wb") as f:
                 f.write(await photo.read())
-            photo_paths.append(f"/media/{photo.filename}")
+            photo_paths.append(f"/media/ads/{photo.filename}")
 
     # Собираем данные для модели
     ad_data = Ads_sc(
