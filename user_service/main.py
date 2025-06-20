@@ -17,6 +17,7 @@ app.add_middleware(AuthMiddleware)
 
 # 3. Монтируем статику по пути /static. Nginx будет обрабатывать это.
 app.mount("/static", StaticFiles(directory="user_service/static"), name="static")
+app.mount("/media", StaticFiles(directory="user_service/media"), name="media")
 
 app.add_middleware(
     CORSMiddleware,

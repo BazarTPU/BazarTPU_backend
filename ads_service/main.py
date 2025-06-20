@@ -12,6 +12,7 @@ app = FastAPI(openapi_prefix="/ads")
 
 # 2. Монтируем статику по пути /static. Nginx добавит префикс /ads
 app.mount("/static", StaticFiles(directory="ads_service/static"), name="static")
+app.mount("/media", StaticFiles(directory="ads_service/media"), name="media")
 
 app.include_router(ads_router, tags=["ads"])
 
