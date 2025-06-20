@@ -395,7 +395,8 @@ async def get_user_profile_json(
             "email": user.email or "",
             "phone": user.phone_number or "",
             "telegram_id": user.telegram_id or "",
-            "user_photo": user.photo[0].file_path if user.photo and len(user.photo) > 0 else "/static/img/noLogoItem900.png"
+            "user_photo": user.photo[0].file_path if user.photo and len(user.photo) > 0 else "/static/img/noLogoItem900.png",
+            "dormitory": user.dormitory.name if user.dormitory else "",
         }
 
 @user_router.get("/ads/{user_id}")
@@ -418,10 +419,9 @@ async def get_user_ads_proxy(user_id: str, request: Request):
 
             # Пробуем разные варианты URL для подключения к ads service
             urls_to_try = [
-                f"http://localhost:8001/ads/user/ads/{user_id}",
-                f"http://ads-service:8001/ads/user/ads/{user_id}",
-                f"http://ads_service:8001/ads/user/ads/{user_id}",
-                f"http://127.0.0.1:8001/ads/user/ads/{user_id}"
+                f"http://localhost:8001/ads/{user_id}",
+                f"http://ads-service:8001/ads/{user_id}",
+                f"http://127.0.0.1:8001/ads/{user_id}"
             ]
 
             last_error = None
