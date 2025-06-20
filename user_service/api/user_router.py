@@ -395,7 +395,7 @@ async def get_user_profile_json(
             "phone": user.phone_number or "",
             "telegram_id": user.telegram_id or "",
             "user_photo": user.photo[0].file_path if user.photo and len(user.photo) > 0 else "/media/avatars/noLogoItem900.png",
-            "dormitory": user.dormitory.name if user.dormitory else "",
+            # "dormitory": user.dormitory.name if user.dormitory else "", # повторяется на сайте
         }
 
 @user_router.get("/ads/{user_id}")
