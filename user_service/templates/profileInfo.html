@@ -318,7 +318,7 @@
                   <div class="row g-0">
                     <div class="col-md-3">
                       {% if ad.photos and ad.photos|length > 0 %}
-                      <img src="{{ ad.photos[0] }}" class="rounded-start" alt="Фото объявления" style="width: 90%; padding: 20px; padding-right: 0px; object-fit: cover; height: 150px;">
+                      <img src="{{ ad.photos[0] }}" class="rounded-start" alt="Фото объявления" style="width: 100%; padding: 20px; padding-right: 0px; object-fit: contain; height: 100%;">
                       {% else %}
                       <img src="{{ url_for('static', path='/img/noLogoItem900.png') }}" class="rounded-start" alt="Нет фото" style="width: 90%; padding: 20px; padding-right: 0px;">
                       {% endif %}

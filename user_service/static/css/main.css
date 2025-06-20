@@ -117,6 +117,7 @@ a {
 
 .buttonProduct {
     background: black;
+    border: black;
     border-radius: 20px;
     height: 40px;
     width: 100%;
