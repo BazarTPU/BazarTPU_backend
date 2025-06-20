@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="p-3">
                                 <span>${ad.title}</span>
                                 <p>${ad.price} ₽</p>
-                                <a href="/ads/Product/${ad.id}"><button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button></a>
+                                <a href="/ads/products?id=${ad.id}"><button class="buttonProduct"><span class="buttonProductText">Просмотр</span></button></a>
                             </div>  
                         </div>
                     </div>
