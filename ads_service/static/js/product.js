@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             // Адрес
             const addressDivs = document.querySelectorAll('.col-12 > div > span');
             if (addressDivs.length > 0) addressDivs[0].textContent = ad.address || '';
-            if (addressDivs.length > 1) addressDivs[1].textContent = ad.dormitory_id ? `Общежитие №${ad.dormitory_id}` : '';
+            if (addressDivs.length > 1) addressDivs[1].textContent = ad.dormitory ? ad.dormitory.name : '';
 
             // Фото
             const photos = ad.photos && ad.photos.length ? ad.photos : ["/ads/static/image/noLogoItem900.png"];
