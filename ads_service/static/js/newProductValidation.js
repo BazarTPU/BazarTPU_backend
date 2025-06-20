@@ -179,9 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const priceErr  = form.querySelector('#price-error');
   const zip   = form.querySelector('#zip');
 
-  const textRule = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-яёЁ0-9 \"«»!,.№;%:?*()_+|\\/<>{}\-=]*$/;
+  const textRule = /^["A-Za-zА-Яа-яёЁ "]{2,}[A-Za-zА-Яа-яёЁ0-9 \"«»!,.№;%:?*()_+|\\/<>{}\-=]*$/;
   // const textRuleTextArea = /^["A-Za-zА-Яа-я "]{2,}[A-Za-zА-Яа-я0-9 \"«»!№;%:?*()_+-=]*$/;
-  const textRuleTextArea = /^[A-Za-zА-Яа-я"\s]{2,}[A-Za-zА-Яа-яёЁ0-9"\s«»!,.№;%:?*()_+|\\/<>{}\-=\s]*$/;
+  const textRuleTextArea = /^[A-Za-zА-Яа-яёЁ"\s]{2,}[A-Za-zА-Яа-яёЁ0-9"\s«»!,.№;%:?*()_+|\\/<>{}\-=\s]*$/;
 
 
   function checkField(field, ruleFn) {
