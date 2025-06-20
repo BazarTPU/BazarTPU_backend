@@ -54,4 +54,5 @@ class AdDAL:
         dorm = Dormitory(name=name, adress=adress)
         self.db_session.add(dorm)
         await self.db_session.flush()
+        await self.db_session.commit()
         return dorm

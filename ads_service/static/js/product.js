@@ -91,7 +91,11 @@ async function loadUserData(userId) {
             // Обновляем информацию об общежитии
             const addressDivs = document.querySelectorAll('.col-12 > div > span');
             if (addressDivs.length > 1) {
-                addressDivs[1].textContent = userData.dormitory ? `Общежитие №${userData.dormitory}` : '';
+                if (userData.dormitory) {
+                    addressDivs[1].textContent = userData.dormitory ? `${userData.dormitory}` : '';
+                } else {
+                    addressDivs[1].textContent = '';
+                }   
             }
 
             // Фото пользователя

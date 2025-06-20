@@ -51,7 +51,7 @@ async def _get_user_by_id(user_id: UUID, session) -> User_sc:
             phone_number=user.phone_number,
             telegram_id=user.telegram_id,
             dormitory=user.dormitory.name if user.dormitory else None,
-            user_photo=user.photo[0].file_path if user.photo else "/static/img/noLogoItem900.png",
+            user_photo=user.photo[0].file_path if user.photo else "/media/avatars/noLogoItem900.png",
         )
 
 

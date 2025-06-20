@@ -65,9 +65,8 @@ async def get_profile_page(
             if not user:
                 return RedirectResponse(url="/auth/login", status_code=302)
 
-            user_photo = user.photo[0].file_path if user.photo else "/static/img/noLogoItem900.png"
+            user_photo = user.photo[0].file_path if user.photo else "/media/avatars/noLogoItem900.png"
 
-            # Получаем объявления пользователя - ИСПРАВЛЕНО
             user_ads = []
             try:
                 print(f"Trying to fetch ads for user_id: {user_id}")
@@ -395,8 +394,8 @@ async def get_user_profile_json(
             "email": user.email or "",
             "phone": user.phone_number or "",
             "telegram_id": user.telegram_id or "",
-            "user_photo": user.photo[0].file_path if user.photo and len(user.photo) > 0 else "/static/img/noLogoItem900.png",
-            "dormitory": user.dormitory.name if user.dormitory else "",
+            "user_photo": user.photo[0].file_path if user.photo and len(user.photo) > 0 else "/media/avatars/noLogoItem900.png",
+            # "dormitory": user.dormitory.name if user.dormitory else "", # повторяется на сайте
         }
 
 @user_router.get("/ads/{user_id}")
